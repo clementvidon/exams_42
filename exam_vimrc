@@ -1,0 +1,20 @@
+" Fusion with 42 conf
+se nocp
+se sw=4 ts=4 ci
+filetype plugin indent on
+
+se ru sc tw=80 ttm=0 udf hi=999
+sy on
+
+nn <space>w <c-w>
+nn se :e *
+nn ss :b#<cr>
+nn ; :
+nn : ;
+
+no <space>= mmgo=G:sil! %s/\s\+$//e<cr>`mzz
+no <space>8 :w\|lc %:h<cr>
+            \
+            \:sil !clang -Werror -Wall -Wextra -fsanitize=address *.c 2>err<cr>
+            \:cfile err<cr>:cw 5<cr>
+            \:!clear;./a.out\|cat -e<cr>
