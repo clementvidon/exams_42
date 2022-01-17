@@ -121,6 +121,7 @@ FG_YELLOW	rank02/get_next_line/tester/utils/color.hpp	/^	FG_YELLOW 			= 33,$/;"	
 FT_PRINTF	rank02/ft_printf/03/ft_printf.h	/^# define FT_PRINTF$/;"	d
 FT_PRINTF_H	rank02/ft_printf/01/ft_printf.h	/^# define FT_PRINTF_H$/;"	d
 FT_PRINTF_H	rank02/ft_printf/02/ft_printf.h	/^# define FT_PRINTF_H$/;"	d
+FT_PRINTF_H	rank02/ft_printf/05/ft_printf.h	/^# define FT_PRINTF_H$/;"	d
 GET_NEXT_LINE	rank02/get_next_line/03/get_next_line.h	/^# define GET_NEXT_LINE$/;"	d
 GET_NEXT_LINE_H	rank02/get_next_line/01/get_next_line.h	/^# define GET_NEXT_LINE_H$/;"	d
 GET_NEXT_LINE_H	rank02/get_next_line/02/get_next_line.h	/^# define GET_NEXT_LINE_H$/;"	d
@@ -207,10 +208,11 @@ check	rank02/get_next_line/tester/utils/check.cpp	/^void check(bool succes)$/;"	
 checkn	rank02/ft_printf/tester/utils/print.hpp	/^void checkn(const char * s, Args... args)$/;"	f
 free	rank02/ft_printf/tester/utils/leaks.cpp	/^void free(void * p) throw()$/;"	f
 free	rank02/get_next_line/tester/utils/leaks.cpp	/^void free(void * p) throw()$/;"	f
-ft_check_double	rank02/inter/int01.c	/^int		ft_check_double(char *str1, int str1_index, char c)$/;"	f
+ft_check_double	rank02/inter/inter01.c	/^int		ft_check_double(char *str1, int str1_index, char c)$/;"	f
 ft_chr	rank02/ft_printf/01/options1.c	/^int	ft_chr(va_list args)$/;"	f
 ft_chr	rank02/ft_printf/02/options1.c	/^int	ft_chr(va_list args)$/;"	f
 ft_chr	rank02/ft_printf/03/options.c	/^int ft_chr(va_list args)$/;"	f
+ft_chr	rank02/ft_printf/05/options.c	/^int	ft_chr(va_list args)$/;"	f
 ft_first_in_both	rank02/union/union02.c	/^int	ft_first_in_both(int index, char *s1, char *s2)$/;"	f
 ft_first_in_self	rank02/union/union02.c	/^int	ft_first_in_self(int index, char *str)$/;"	f
 ft_free	rank02/get_next_line/01/get_next_line_utils.c	/^void	*ft_free(void *str)$/;"	f
@@ -221,18 +223,20 @@ ft_has_nl	rank02/get_next_line/03/get_next_line_utils.c	/^int	ft_has_nl(char *st
 ft_has_nl	rank02/get_next_line/04/get_next_line_utils.c	/^int	ft_has_nl(char *str)$/;"	f
 ft_has_nl	rank02/get_next_line/05/get_next_line_utils.c	/^size_t	ft_has_nl(char *str)$/;"	f
 ft_hex	rank02/ft_printf/03/options.c	/^int ft_hex(va_list args)$/;"	f
+ft_hex	rank02/ft_printf/05/options.c	/^int	ft_hex(va_list args)$/;"	f
 ft_hx1	rank02/ft_printf/01/options2.c	/^int	ft_hx1(va_list args)$/;"	f
 ft_hx1	rank02/ft_printf/02/options2.c	/^int	ft_hx1(va_list args)$/;"	f
 ft_hx2	rank02/ft_printf/01/options2.c	/^int	ft_hx2(va_list args)$/;"	f
 ft_hx2	rank02/ft_printf/02/options2.c	/^int	ft_hx2(va_list args)$/;"	f
-ft_inter	rank02/inter/int01.c	/^void	ft_inter(char	*str1, char *str2)$/;"	f
-ft_inter	rank02/inter/inter.c	/^void	ft_inter(char *s1, char *s2)$/;"	f
-ft_isdouble	rank02/inter/inter.c	/^int	ft_isdouble(char c, char *s2)$/;"	f
-ft_isfirst	rank02/inter/inter.c	/^int	ft_isfirst(int index, char *s1)$/;"	f
+ft_inter	rank02/inter/inter01.c	/^void	ft_inter(char	*str1, char *str2)$/;"	f
+ft_inter	rank02/inter/inter02.c	/^void	ft_inter(char *s1, char *s2)$/;"	f
+ft_isdouble	rank02/inter/inter02.c	/^int	ft_isdouble(char c, char *s2)$/;"	f
+ft_isfirst	rank02/inter/inter02.c	/^int	ft_isfirst(int index, char *s1)$/;"	f
 ft_locate_nl	rank02/get_next_line/01/get_next_line.c	/^static int	ft_locate_nl(char *str)$/;"	f	file:
 ft_nbr	rank02/ft_printf/01/options1.c	/^int	ft_nbr(va_list args)$/;"	f
 ft_nbr	rank02/ft_printf/02/options1.c	/^int	ft_nbr(va_list args)$/;"	f
 ft_nbr	rank02/ft_printf/03/options.c	/^int ft_nbr(va_list args)$/;"	f
+ft_nbr	rank02/ft_printf/05/options.c	/^int	ft_nbr(va_list args)$/;"	f
 ft_newline	rank02/get_next_line/03/get_next_line.c	/^static char	*ft_newline(char *temp)$/;"	f	file:
 ft_newline	rank02/get_next_line/04/get_next_line.c	/^static char	*ft_newline(char *temp)$/;"	f	file:
 ft_newline	rank02/get_next_line/05/get_next_line.c	/^char	*ft_newline(char *temp)$/;"	f
@@ -244,18 +248,24 @@ ft_once_in_self	rank02/union/union00.c	/^int ft_once_in_self(char *s1, int index
 ft_once_in_self	rank02/union/union01.c	/^int	ft_once_in_self(char *str, int index)$/;"	f
 ft_only_in_second	rank02/union/union01.c	/^int	ft_only_in_second(char *s1, char *s2, char c)$/;"	f
 ft_parse	rank02/ft_printf/03/ft_printf.c	/^static int ft_parse(int (*options[7])(va_list), const char *fmt, va_list args)$/;"	f	file:
+ft_parse	rank02/ft_printf/05/ft_printf.c	/^int	ft_parse(int (*options[7])(va_list), const char *fmt, va_list args)$/;"	f
 ft_pct	rank02/ft_printf/01/options1.c	/^int	ft_pct(va_list args)$/;"	f
 ft_pct	rank02/ft_printf/02/options1.c	/^int	ft_pct(va_list args)$/;"	f
 ft_pct	rank02/ft_printf/03/options.c	/^int ft_pct(va_list args)$/;"	f
+ft_pct	rank02/ft_printf/05/options.c	/^int	ft_pct(va_list args)$/;"	f
 ft_printf	rank02/ft_printf/01/ft_printf.c	/^int	ft_printf(const char *fmt, ...)$/;"	f
 ft_printf	rank02/ft_printf/02/ft_printf.c	/^int	ft_printf(const char *fmt, ...)$/;"	f
 ft_printf	rank02/ft_printf/03/ft_printf.c	/^int ft_printf(const char *fmt, ...)$/;"	f
+ft_printf	rank02/ft_printf/05/ft_printf.c	/^int	ft_printf(const char *fmt, ...)$/;"	f
 ft_ptr	rank02/ft_printf/01/options2.c	/^int	ft_ptr(va_list args)$/;"	f
 ft_ptr	rank02/ft_printf/02/options2.c	/^int	ft_ptr(va_list args)$/;"	f
 ft_ptr	rank02/ft_printf/03/options.c	/^int ft_ptr(va_list args)$/;"	f
+ft_ptr	rank02/ft_printf/05/options.c	/^int	ft_ptr(va_list args)$/;"	f
 ft_putchar	rank02/ft_printf/01/tools.c	/^int	ft_putchar(char c)$/;"	f
 ft_putchar	rank02/ft_printf/02/utils.c	/^int	ft_putchar(char c)$/;"	f
 ft_putchar	rank02/ft_printf/03/tools.c	/^int	ft_putchar(char c)$/;"	f
+ft_putnbr_base	rank02/ft_printf/05/utils.c	/^void	ft_putnbr_base(long nb, int baselen, char *base, int *ret)$/;"	f
+ft_putnbr_baseptr	rank02/ft_printf/05/utils.c	/^void	ft_putnbr_baseptr(unsigned long nb, int baselen, char *base, int *ret)$/;"	f
 ft_putnbrbase	rank02/ft_printf/01/tools.c	/^void	ft_putnbrbase(long n, int baselen, char *base, int *len)$/;"	f
 ft_putnbrbase	rank02/ft_printf/02/utils.c	/^void	ft_putnbrbase(long nb, long baselen, char *base, int *ret)$/;"	f
 ft_putnbrbase	rank02/ft_printf/03/tools.c	/^void	ft_putnbrbase(long nb, int baselen, char *base, int *ret)$/;"	f
@@ -266,6 +276,7 @@ ft_putstr	rank02/ft_printf/01/tools.c	/^int	ft_putstr(char *str)$/;"	f
 ft_str	rank02/ft_printf/01/options1.c	/^int	ft_str(va_list args)$/;"	f
 ft_str	rank02/ft_printf/02/options1.c	/^int	ft_str(va_list args)$/;"	f
 ft_str	rank02/ft_printf/03/options.c	/^int ft_str(va_list args)$/;"	f
+ft_str	rank02/ft_printf/05/options.c	/^int	ft_str(va_list args)$/;"	f
 ft_strdup	rank02/get_next_line/01/get_next_line_utils.c	/^char	*ft_strdup(const char *s1)$/;"	f
 ft_strdup	rank02/get_next_line/02/get_next_line_utils.c	/^char	*ft_strdup(char *s1)$/;"	f
 ft_strdup	rank02/get_next_line/03/get_next_line_utils.c	/^char	*ft_strdup(char *str)$/;"	f
@@ -276,6 +287,7 @@ ft_strjoin	rank02/get_next_line/02/get_next_line_utils.c	/^char	*ft_strjoin(char
 ft_strjoin	rank02/get_next_line/03/get_next_line_utils.c	/^char	*ft_strjoin(char *s1, char *s2)$/;"	f
 ft_strjoin	rank02/get_next_line/04/get_next_line_utils.c	/^char	*ft_strjoin(char *s1, char *s2)$/;"	f
 ft_strjoin	rank02/get_next_line/05/get_next_line_utils.c	/^char	*ft_strjoin(char *s1, char *s2)$/;"	f
+ft_strlen	rank02/ft_printf/05/utils.c	/^size_t	ft_strlen(char *str)$/;"	f
 ft_strlen	rank02/get_next_line/01/get_next_line_utils.c	/^size_t	ft_strlen(const char *s)$/;"	f
 ft_strlen	rank02/get_next_line/02/get_next_line_utils.c	/^size_t	ft_strlen(char *str)$/;"	f
 ft_strlen	rank02/get_next_line/03/get_next_line_utils.c	/^size_t	ft_strlen(char *str)$/;"	f
@@ -292,6 +304,7 @@ ft_union	rank02/union/union00.c	/^void ft_union(char *s1, char *s2)$/;"	f
 ft_union	rank02/union/union01.c	/^void	ft_union(char *s1, char *s2)$/;"	f
 ft_union	rank02/union/union02.c	/^void	ft_union(char *s1, char *s2)$/;"	f
 ft_uns	rank02/ft_printf/03/options.c	/^int ft_uns(va_list args)$/;"	f
+ft_uns	rank02/ft_printf/05/options.c	/^int	ft_uns(va_list args)$/;"	f
 ft_update_temp	rank02/get_next_line/01/get_next_line.c	/^static char	*ft_update_temp(char *temp)$/;"	f	file:
 ft_update_temp	rank02/get_next_line/02/get_next_line.c	/^static char	*ft_update_temp(char *temp)$/;"	f	file:
 get_next_line	rank02/get_next_line/01/get_next_line.c	/^char	*get_next_line(int fd)$/;"	f
@@ -321,6 +334,7 @@ iTest	rank02/get_next_line/tester/tests/mandatory.cpp	/^int iTest = 1;$/;"	v
 main	rank02/ft_printf/01/main.c	/^int	main(void)$/;"	f
 main	rank02/ft_printf/02/main.c	/^int	main(void)$/;"	f
 main	rank02/ft_printf/03/main.c	/^int	main(void)$/;"	f
+main	rank02/ft_printf/05/main.c	/^int	main(void)$/;"	f
 main	rank02/ft_printf/tester/tests/+_test.cpp	/^int main(int ac, char ** av)$/;"	f
 main	rank02/ft_printf/tester/tests/0_test.cpp	/^int main(int ac, char ** av)$/;"	f
 main	rank02/ft_printf/tester/tests/c_test.cpp	/^int main(int ac, char ** av)$/;"	f
@@ -344,9 +358,9 @@ main	rank02/get_next_line/04/main.c	/^int	main(void)$/;"	f
 main	rank02/get_next_line/05/main.c	/^int	main(void)$/;"	f
 main	rank02/get_next_line/tester/tests/bonus.cpp	/^int main(void)$/;"	f
 main	rank02/get_next_line/tester/tests/mandatory.cpp	/^int main(void)$/;"	f
-main	rank02/inter/int01.c	/^int		main(int ac, char **av)$/;"	f
-main	rank02/inter/inter.c	/^int	main(int ac, char **av)$/;"	f
 main	rank02/inter/inter00.c	/^int	main(int argc, char **argv) {$/;"	f
+main	rank02/inter/inter01.c	/^int		main(int ac, char **av)$/;"	f
+main	rank02/inter/inter02.c	/^int	main(int ac, char **av)$/;"	f
 main	rank02/union/union00.c	/^int	main(int ac, char **av)$/;"	f
 main	rank02/union/union01.c	/^int	main(int ac, char **av)$/;"	f
 main	rank02/union/union02.c	/^int	main(int ac, char **av)$/;"	f
