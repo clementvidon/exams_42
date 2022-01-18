@@ -1,5 +1,7 @@
 #include "get_next_line.h"
 
+/* Useless to check 'str' for each while loop */
+
 size_t	ft_has_nl(char *str)
 {
 	if (str)

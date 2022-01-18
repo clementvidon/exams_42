@@ -66,7 +66,7 @@ char	*ft_substr(char *s1, size_t start, size_t len)
 	if (!s1)
 		return (NULL);
 	if (start >= ft_strlen(s1))
-		return (ft_strdup("")); // strdup != NULL
+		return (ft_strdup("")); // (useless, better ret null and remove ft_getline chevk))
 	s2 = malloc (sizeof(char) * (len + 1)); // len != strlen(s1)
 	if (!s2)
 		return (NULL);

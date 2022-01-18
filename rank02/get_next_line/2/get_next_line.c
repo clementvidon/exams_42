@@ -25,7 +25,7 @@ static char	*ft_getline(char *temp)
 	size_t		i;
 
 	if (*temp == '\0') // print (null) if EOF reached
-		return (NULL);
+		return (NULL); // only if substr return strdup inst NULL
 	i = 0;
 	while (temp[i] && temp[i] != '\n')
 		i++;

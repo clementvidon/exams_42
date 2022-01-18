@@ -1,35 +1,29 @@
-#include <unistd.h>
-#include <stdio.h>
+/* 220118 */
 
-int	ft_first_in_self(int index, char *str)
+#include <unistd.h>
+
+int	ft_match_once(char *str, int index)
 {
 	int	i;
 
 	i = 0;
-	while (str[i] && i < index)
+	while (i < index)
 	{
-		if (str[i] == str[index])
+		if (str[index] == str[i])
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
-int	ft_first_in_both(int index, char *s1, char *s2)
+int	ft_match_none(char *str, char c)
 {
 	int	i;
 
 	i = 0;
-	while (s1[i] && i < index)
+	while (str[i])
 	{
-		if (s1[i] == s2[index])
-			return (0);
-		i++;
-	}
-	i = 0;
-	while (s2[i] && i < index)
-	{
-		if (s2[i] == s2[index])
+		if (str[i] == c)
 			return (0);
 		i++;
 	}
@@ -40,17 +34,19 @@ void	ft_union(char *s1, char *s2)
 {
 	int	i;
 
+	/* s1[i] appears once in s1 */
 	i = 0;
 	while (s1[i])
 	{
-		if (ft_first_in_self(i, s1))
+		if (ft_match_once(s1, i))
 			write(1, &s1[i], 1);
 		i++;
 	}
+	/* s2[i] appears once in s2 and does not appear in s1 */
 	i = 0;
 	while (s2[i])
 	{
-		if (ft_first_in_both(i, s1, s2))
+		if (ft_match_once(s2, i) && ft_match_none(s1, s2[i]))
 			write(1, &s2[i], 1);
 		i++;
 	}
@@ -59,7 +55,8 @@ void	ft_union(char *s1, char *s2)
 int	main(int ac, char **av)
 {
 	if (ac == 3)
+	{
 		ft_union(av[1], av[2]);
+	}
 	write(1, "\n", 1);
-	return (0);
 }

@@ -1,10 +1,4 @@
-
-
-
-
-
-
-
+/* 220118 */
 #include <unistd.h>
 
 int	ft_isdouble(char c, char *s2)
@@ -56,7 +50,3 @@ int	main(int ac, char **av)
 	write(1, "\n", 1);
 	return (0);
 }
-
-
-
-

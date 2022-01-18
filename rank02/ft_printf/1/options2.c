@@ -60,6 +60,5 @@ int	ft_ptr(va_list args)
 	l = ft_putstr("0x");
 	len = &l;
 	nb = va_arg(args, unsigned long);
-	ft_putnbrbase_ptr(nb, 16, "0123456789abcdef", len);
-	return (*len);
+	ft_putnbrbase_ptr(nb, 16, "0123456789abcdef", len); return (*len);
 }
