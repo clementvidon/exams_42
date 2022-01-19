@@ -1,8 +1,3 @@
-"+Import 42 conf here-+
-se nocp
-filetype plugin indent on
-se sw=4 ts=4 ci
-"+--------------------+
 se ru sc udf hi=999 ttm=0 tw=80
 sy on
 nn <space>w <c-w>
