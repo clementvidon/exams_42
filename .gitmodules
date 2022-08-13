@@ -1,0 +1,9 @@
+[submodule "tools/ft_mallocator"]
+	path = tools/ft_mallocator
+	url = https://github.com/tmatis/ft_mallocator.git
+[submodule "rank03/get_next_line/base/gnlTester"]
+	path = rank03/get_next_line/base/gnlTester
+	url = https://github.com/Tripouille/gnlTester.git
+[submodule "tools/tools/ft_mallocator"]
+	path = tools/tools/ft_mallocator
+	url = https://github.com/tmatis/ft_mallocator.git
