@@ -22,10 +22,10 @@
 char	*get_next_line(int fd);
 
 /* Utils */
-size_t	ft_has_nl(const char *str);
-size_t	ft_strlen(const char *str);
-char	*ft_strdup(const char *str);
-char	*ft_strjoin(char *s1, const char *s2);
-char	*ft_substr(const char *str, unsigned int start, size_t size);
+size_t	ft_has_nl(char const *str);
+size_t	ft_strlen(char const *str);
+char	*ft_strdup(char const *str);
+char	*ft_strjoin_free_s1(char *s1, char const *s2);
+char	*ft_substr(char const *str, unsigned int start, size_t size);
 
 #endif

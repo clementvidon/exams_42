@@ -4,10 +4,10 @@
  ** @brief      Extract the first line it finds in temp.
  **
  ** @param[in]  temp can be the next line [ and more ] or NULL.
- ** @return     The next line to be print from temp content.
+ ** @return     The next line to taken from temp content.
  */
 
-static char	*ft_newline(const char *temp)
+static char	*ft_newline(char const *temp)
 {
 	size_t	i;
 
@@ -53,7 +53,7 @@ static char	*ft_newtemp(char *temp)
  **              - the next line, if BUFFER_SIZE is smaller than a line.
  **              - the next line and more, if BUFFER_SIZE is bigger than a line.
  **              - NULL if there are no text left to read on the filedes.
- ** @var        line is the last read line.
+ ** @var        line is the next line to be returned.
  ** @var        buf is for read(2) buffer.
  ** @var        rd is for read(2) return value.
  **
@@ -80,7 +80,7 @@ char	*get_next_line(int fd)
 		if (rd == -1)
 			return (free (buf), NULL);
 		buf[rd] = '\0';
-		temp = ft_strjoin (temp, buf);
+		temp = ft_strjoin_free_s1 (temp, buf);
 	}
 	free (buf);
 	if (!temp)

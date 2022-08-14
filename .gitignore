@@ -1,5 +1,16 @@
-**/a.out
-**/err
-**/*.o
-**/tester
+# Compiled source #
+###################
+*.o
+*.a
+*.out
+*.so
+
+# Editor Files #
+################
+*.swo
+*.swp
+*~
+
+# Tags #
+########
 tags
