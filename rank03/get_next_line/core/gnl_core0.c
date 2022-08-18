@@ -1,3 +1,4 @@
+/* ** PREPROC >>> */
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -7,12 +8,11 @@
 # define BUFFER_SIZE 1
 #endif
 
-/*
- ** ****************** GNL UTILS
- ** ****************************
+/* <<<
+ ** GNL UTILS >>>
  */
 
-int	ft_has_nl(const char *str)
+int	ft_has_nl(char const *str)
 {
 	if (str)
 		while (*str && *str != '\n')
@@ -20,9 +20,9 @@ int	ft_has_nl(const char *str)
 	return (str && *str == '\n');
 }
 
-size_t	ft_strlen(const char *str)
+size_t	ft_strlen(char const *str)
 {
-	const char	*ptr;
+	char const	*ptr;
 
 	ptr = str;
 	while (*ptr)
@@ -30,7 +30,7 @@ size_t	ft_strlen(const char *str)
 	return ((size_t)(ptr - str));
 }
 
-char	*ft_strdup(const char *s1)
+char	*ft_strdup(char const *s1)
 {
 	char	*s2;
 	char	*p2;
@@ -46,7 +46,7 @@ char	*ft_strdup(const char *s1)
 	return (*p2 = 0, s2);
 }
 
-char	*ft_strjoin_free_s1(char *s1, const char *s2)
+char	*ft_strjoin_free_s1(char *s1, char const *s2)
 {
 	char	*s3;
 	char	*p3;
@@ -70,7 +70,7 @@ char	*ft_strjoin_free_s1(char *s1, const char *s2)
 	return (free (s1), *p3 = 0, s3);
 }
 
-char	*ft_substr(const char *str, unsigned int start, size_t size)
+char	*ft_substr(char const *str, unsigned int start, size_t size)
 {
 	size_t	len;
 	char	*sub;
@@ -91,12 +91,18 @@ char	*ft_substr(const char *str, unsigned int start, size_t size)
 	return (sub);
 }
 
-/*
- ** ****************** GNL
- ** **********************
+/* <<<
+ ** GNL >>>
  */
 
-static char	*ft_newline(const char *temp)
+/*
+ ** @brief      Extract the first line it finds in temp.
+ **
+ ** @param[in]  temp can be the next line [ and more ] or NULL.
+ ** @return     The next line to taken from temp content.
+ */
+
+static char	*ft_newline(char const *temp)
 {
 	size_t	i;
 
@@ -106,6 +112,14 @@ static char	*ft_newline(const char *temp)
 	i += (temp[i] == '\n');
 	return (ft_substr (temp, 0, i));
 }
+
+/*
+ ** @brief      Update temp to pass to the next line it contains or NULL if
+ **             there is nothing left to read.
+ **
+ ** @param[in]  temp can be the next line [ and more ] or NULL.
+ ** @return     A new temp starting from the next line to read or NULL.
+ */
 
 static char	*ft_newtemp(char *temp)
 {
@@ -121,6 +135,26 @@ static char	*ft_newtemp(char *temp)
 	new = ft_substr (temp, i, ft_strlen (temp) - i);
 	return (free (temp), new);
 }
+
+/*
+ ** @brief      Get the next line of text available on a file descriptor.
+ **
+ ** Calling get_next_line in a loop will allow us to read the text available on
+ ** the file descriptor one line at a time until the end of it.
+ **
+ ** A line is defined as a NUL or LF terminated string.
+ **
+ ** @var        temp can be:
+ **              - the next line, if BUFFER_SIZE is smaller than a line.
+ **              - the next line and more, if BUFFER_SIZE is bigger than a line.
+ **              - NULL if there are no text left to read on the filedes.
+ ** @var        line is the next line to be returned.
+ ** @var        buf is for read(2) buffer.
+ ** @var        rd is for read(2) return value.
+ **
+ ** @param[in]  fd the file descriptor.
+ ** @return     The line that has just been read or NULL.
+ */
 
 char	*get_next_line(int fd)
 {
@@ -151,9 +185,8 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-/*
- ** ****************** MAIN
- ** ***********************
+/* <<<
+ ** MAIN >>>
  */
 
 int	main(void)
@@ -179,3 +212,4 @@ int	main(void)
 	printf("%s\n", ret);
 	free(ret);
 }
+/* <<< */

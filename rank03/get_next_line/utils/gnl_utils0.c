@@ -66,7 +66,7 @@ char	*ft_strjoin_free_s1(char *s1, char const *s2)
 		*p3++ = *p1++;
 	while (*s2)
 		*p3++ = *s2++;
-	return (free (s1), *p3 = 0, s3); // XXX *p3 NOT p3
+	return (free (s1), *p3 = 0, s3);
 }
 
 char	*ft_substr(char const *str, unsigned int start, size_t size)
@@ -141,6 +141,9 @@ int	main(void)
 	dprintf(2, "substr> %s == 789\n", sub);
 	free (sub);
 	sub = ft_substr("123456789", 0, 1);
+	dprintf(2, "substr> %s == 1\n", sub);
+	free (sub);
+	sub = ft_substr("123456789", 8, 5);
 	dprintf(2, "substr> %s == 1\n", sub);
 	free (sub);
 
