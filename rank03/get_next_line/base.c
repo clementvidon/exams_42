@@ -1,20 +1,16 @@
 /* 1044 */
 /* 1139 */
 
-#include <fcntl.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <stdio.h>
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 42
 #endif
 
-#ifndef OPEN_MAX
-# define OPEN_MAX 42
-#endif
-
-int	ft_has_nl(const char *str)
+static size_t	ft_has_nl(const char *str)
 {
 	if (str)
 		while (*str && *str != '\n')
@@ -28,25 +24,24 @@ size_t	ft_strlen(const char *str)
 
 	ptr = str;
 	while (*ptr)
-		ptr++;
+		++ptr;
 	return ((size_t)(ptr - str));
 }
 
 char	*ft_strdup(const char *str)
 {
-	char	*ptr;
 	char	*dup;
+	char	*ptr;
 
 	if (!str)
 		return (NULL);
-	dup = malloc (sizeof (*dup) * (ft_strlen (str) + 1));
+	dup = malloc (sizeof (char) * (ft_strlen(str) + 1));
 	if (!dup)
 		return (NULL);
 	ptr = dup;
 	while (*str)
 		*ptr++ = *str++;
-	*ptr = '\0';
-	return (dup);
+	return (*ptr = 0, dup);
 }
 
 char	*ft_strjoin_free_s1(char *s1, const char *s2)
@@ -55,98 +50,96 @@ char	*ft_strjoin_free_s1(char *s1, const char *s2)
 	char	*p3;
 	char	*p1;
 
-	if (!s1 && !s2)
-		return (ft_strdup (""));
 	if (!s1 && s2)
 		return (ft_strdup (s2));
-	if (!s1 && s1)
+	if (s1 && !s2)
 		return (ft_strdup (s1));
-	s3 = malloc (sizeof (*s3) + (ft_strlen (s1) + ft_strlen (s2) + 1));
+	if (!s1 && !s2)
+		return (ft_strdup (""));
+	s3 = malloc (sizeof (char) * (ft_strlen (s1) + ft_strlen (s2) + 1));
 	if (!s3)
 		return (free (s1), NULL);
-	p1 = s1;
 	p3 = s3;
+	p1 = s1;
 	while (*p1)
 		*p3++ = *p1++;
 	while (*s2)
 		*p3++ = *s2++;
-	*p3 = '\0';
-	return (free (s1), s3);
+	return (*p3 = 0, free (s1), s3);
 }
 
-char	*ft_substr(const char *str, size_t start, size_t size)
+char	*ft_substr(const char *str, unsigned int start, size_t size)
 {
-	char	*sub;
 	size_t	len;
+	char	*sub;
 
 	if (!str)
 		return (NULL);
 	len = ft_strlen (str);
 	if (start >= len)
-		return (NULL); // !!!
-	if (len - start <= size)
+		return (NULL);
+	if (len - start < size)
 		size = len - start;
-	sub = malloc (sizeof (*sub) * (size + 1));
+	sub = malloc (sizeof (char) * (size + 1));
 	if (!sub)
 		return (NULL);
-	sub[size] = '\0';
-	while (size--) // XXX not str[size--]
+	sub[size] = 0;
+	while (size--)
 		sub[size] = str[start + size];
 	return (sub);
 }
 
-char	*ft_line(char *temp)
+static char	*ft_line(const char *temp)
 {
 	size_t	i;
 
 	i = 0;
-	while (temp[i] && temp[i] != '\n')
+	while (temp[i] != '\0' && temp[i] != '\n')
 		i++;
 	i += (temp[i] == '\n');
 	return (ft_substr (temp, 0, i));
 }
 
-char	*ft_temp(char *temp)
+static char	*ft_temp(char *temp)
 {
-	char	*new; // creer un ft_str_replace qui free s1 et set s2 a son address ?
-	size_t	i;
+	char			*new;
+	unsigned int	i;
 
 	i = 0;
-	while (temp[i] && temp[i] != '\n')
+	while (temp[i] != '\0' && temp[i] != '\n')
 		i++;
 	if (temp[i] == '\0')
-		return (free (temp), NULL); // XXX free temp
+		return (free (temp), NULL);
 	i += (temp[i] == '\n');
-	new = ft_substr (temp, i, ft_strlen (temp) - i); // size = au strlen - i temp pas i !!
+	new = ft_substr (temp, i, ft_strlen (temp) - i);
 	return (free (temp), new);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*temp; // XXX static
+	static char	*temp;
 	char		*line;
 	char		*buf;
-	long		r;
+	long		rd;
 
 	if (fd == -1 || BUFFER_SIZE < 1)
 		return (NULL);
-	buf = malloc (sizeof (*buf) * (BUFFER_SIZE) + 1);
+	buf = malloc (sizeof (char) * (BUFFER_SIZE + 1));
 	if (!buf)
 		return (NULL);
-	r = 1;
-	while (r && !ft_has_nl (temp))
+	rd = 1;
+	while (rd && !ft_has_nl (temp))
 	{
-		r = read (fd, buf, BUFFER_SIZE);
-		if (r == -1)
+		rd = read (fd, buf, BUFFER_SIZE);
+		if (rd == -1)
 			return (free (buf), NULL);
-		buf[r] = '\0';
+		buf[rd] = '\0';
 		temp = ft_strjoin_free_s1 (temp, buf);
 	}
 	free (buf);
 	if (!temp)
 		return (NULL);
-	line = ft_line (temp);
-	temp = ft_temp (temp);
+	line = ft_line (temp); temp = ft_temp (temp);
 	return (line);
 }
 
@@ -190,7 +183,7 @@ int	main(void)
 		str = get_next_line (fd);
 		if (!str)
 			break ;
-		dprintf(2, "%s", str);
+		write (1, str, ft_strlen(str));
 		free (str);
 	}
 	fd = open ("file", O_RDONLY);
@@ -199,7 +192,7 @@ int	main(void)
 		str = get_next_line (fd);
 		if (!str)
 			break ;
-		dprintf(2, "%s", str);
+		write (1, str, ft_strlen(str));
 		free (str);
 	}
 	fd = open ("empty", O_RDONLY);
@@ -208,7 +201,7 @@ int	main(void)
 		str = get_next_line (fd);
 		if (!str)
 			break ;
-		dprintf(2, "%s", str);
+		write (1, str, ft_strlen(str));
 		free (str);
 	}
 	return (0);
