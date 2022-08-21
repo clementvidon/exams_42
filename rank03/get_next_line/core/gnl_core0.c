@@ -107,7 +107,7 @@ static char	*ft_newline(char const *temp)
 	size_t	i;
 
 	i = 0;
-	while (temp[i] != '\0' && temp[i] != '\n')
+	while (temp[i] && temp[i] != '\n')
 		i++;
 	i += (temp[i] == '\n');
 	return (ft_substr (temp, 0, i));
@@ -192,24 +192,33 @@ char	*get_next_line(int fd)
 int	main(void)
 {
 	int		fd;
-	char	*ret;
+	char	*line;
 
 	fd = open("file", O_RDONLY);
+	while (42)
+	{
+		line = get_next_line(fd);
+		if (!line)
+			return (0);
+		write (1, line, ft_strlen (line));
+		free (line);
+	}
 
-	ret = get_next_line(fd);
-	printf("%s\n", ret);
-	free(ret);
 
-	ret = get_next_line(fd);
-	printf("%s\n", ret);
-	free(ret);
+	/* ret = get_next_line(fd); */
+	/* printf("%s\n", ret); */
+	/* free(ret); */
 
-	ret = get_next_line(fd);
-	printf("%s\n", ret);
-	free(ret);
+	/* ret = get_next_line(fd); */
+	/* printf("%s\n", ret); */
+	/* free(ret); */
 
-	ret = get_next_line(fd);
-	printf("%s\n", ret);
-	free(ret);
+	/* ret = get_next_line(fd); */
+	/* printf("%s\n", ret); */
+	/* free(ret); */
+
+	/* ret = get_next_line(fd); */
+	/* printf("%s\n", ret); */
+	/* free(ret); */
 }
 /* <<< */
