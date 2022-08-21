@@ -1,46 +1,36 @@
 #include "get_next_line.h"
 
-/* Useless to check 'str' for each while loop */
-
-size_t	ft_has_nl(const char *str)
-{
-	if (str)
-		while (*str && *str != '\n')
-			str++;
-	return (str && *str == '\n');
-}
-
 size_t	ft_strlen(const char *str)
 {
 	const char	*ptr;
 
 	ptr = str;
 	while (*ptr)
-		ptr++;
+		++ptr;
 	return ((size_t)(ptr - str));
 }
 
-char	*ft_strdup(const char *s1)
+char	*ft_strdup(const char *str)
 {
-	char	*s2;
-	char	*p2;
+	char	*dup;
+	char	*ptr;
 
-	if (!s1)
+	if (!str)
 		return (NULL);
-	s2 = malloc (sizeof (char) * (ft_strlen(s1) + 1));
-	if (!s2)
+	dup = malloc (sizeof (char) * (ft_strlen(str) + 1));
+	if (!dup)
 		return (NULL);
-	p2 = s2;
-	while (*s1)
-		*p2++ = *s1++;
-	return (*p2 = 0, s2);
+	ptr = dup;
+	while (*str)
+		*ptr++ = *str++;
+	return (*ptr = 0, dup);
 }
 
-char	*ft_strjoin(char *s1, const char *s2)
+char	*ft_strjoin_free_s1(char *s1, const char *s2)
 {
 	char	*s3;
-	char	*p1;
 	char	*p3;
+	char	*p1;
 
 	if (!s1 && s2)
 		return (ft_strdup (s2));
@@ -51,8 +41,8 @@ char	*ft_strjoin(char *s1, const char *s2)
 	s3 = malloc (sizeof (char) * (ft_strlen (s1) + ft_strlen (s2) + 1));
 	if (!s3)
 		return (free (s1), NULL);
-	p1 = s1;
 	p3 = s3;
+	p1 = s1;
 	while (*p1)
 		*p3++ = *p1++;
 	while (*s2)

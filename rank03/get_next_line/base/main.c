@@ -5,7 +5,7 @@ int	main(void)
 	int		fd;
 	char	*ret;
 
-	fd = open("file", O_RDONLY);
+	fd = open("Makefile", O_RDONLY);
 
 	while (1)
 	{

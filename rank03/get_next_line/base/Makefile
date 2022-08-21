@@ -58,7 +58,7 @@ update:
 
 malloc_test: $(OBJS)
 	@clang -Wall -Wextra -Werror -g -fsanitize=undefined -rdynamic -o $@ ${OBJS} \
-		-L ../../../tools/ft_mallocator -lmallocator
+		-Lft_mallocator -lmallocator
 
 run:
 	@./$(NAME) $(ARGS) || true
