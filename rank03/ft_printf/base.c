@@ -52,7 +52,7 @@ int	ft_printf(const char *fmt, ...)
 	{
 		if (*fmt != '%')
 			r += write (1, fmt, 1);
-		else if (*fmt == '%' && *fmt + 1)
+		else if (*(fmt + 1))
 		{
 			fmt++;
 			if (*fmt == 's')
@@ -75,35 +75,41 @@ int	main(void)
 	int		ret;
 	char	*null = NULL;
 
-	(void)null;
+	// SEGV
+	ret =  ft_printf ("%");
+
 	ret =  ft_printf ("");
-	dprintf (2, "\n%i\n", ret);
-	ret = dprintf (2, "");
-	dprintf (2, "\n%i\n", ret);
+	dprintf (1, " %i\n", ret);
+	ret = dprintf (1, "");
+	dprintf (1, " %i\n", ret);
+	dprintf (1, "----------\n");
+
+	// STR
+	ret =  ft_printf ("'%s'", "");
+	dprintf (2, " %i\n", ret);
+	ret = dprintf (2, "'%s'", "");
+	dprintf (2, " %i\n", ret);
 	dprintf (2, "----------\n");
 
-	ret =  ft_printf ("%s", "");
-	dprintf (2, "\n%i\n", ret);
-	ret = dprintf (2, "%s", "");
-	dprintf (2, "\n%i\n", ret);
+	// NBR
+	ret =  ft_printf ("'%i'", 0);
+	dprintf (2, " %i\n", ret);
+	ret = dprintf (2, "'%i'", 0);
+	dprintf (2, " %i\n", ret);
 	dprintf (2, "----------\n");
 
-	ret =  ft_printf ("%i", 0);
-	dprintf (2, "\n%i\n", ret);
-	ret = dprintf (2, "%i", 0);
-	dprintf (2, "\n%i\n", ret);
+	// HEX
+	ret =  ft_printf ("'%x'", 0);
+	dprintf (2, " %i\n", ret);
+	ret = dprintf (2, "'%x'", 0);
+	dprintf (2, " %i\n", ret);
 	dprintf (2, "----------\n");
 
-	ret =  ft_printf ("%x", 0);
-	dprintf (2, "\n%i\n", ret);
-	ret = dprintf (2, "%x", 0);
-	dprintf (2, "\n%i\n", ret);
-	dprintf (2, "----------\n");
-
-	ret =  ft_printf ("salut %s  %s    %x   %i  %x%x\n", "", null, -42, 42, INT_MAX, INT_MIN);
-	dprintf (2, "%i\n", ret);
-	ret = dprintf (2, "salut %s  %s    %x   %i  %x%x\n", "", null, -42, 42, INT_MAX, INT_MIN);
-	dprintf (2, "%i\n", ret);
+	// MIX
+	ret =  ft_printf ("'salut %s  %s    %x   %i  %x%x'", "", null, -42, 42, INT_MAX, INT_MIN);
+	dprintf (2, " %i\n", ret);
+	ret = dprintf (2, "'salut %s  %s    %x   %i  %x%x'", "", null, -42, 42, INT_MAX, INT_MIN);
+	dprintf (2, " %i\n", ret);
 	dprintf (2, "----------\n");
 
 	return (0);

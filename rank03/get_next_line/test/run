@@ -1,0 +1,8 @@
+# usage: bash run <gnl.c>
+clang -D BUFFER_SIZE=0 $1 && valgrind ./a.out | wc -m;
+clang -D BUFFER_SIZE=10 $1 && valgrind ./a.out | wc -m;
+clang -D BUFFER_SIZE=1000 $1 && valgrind ./a.out | wc -m;
+clang -D BUFFER_SIZE=100000 $1 && valgrind ./a.out | wc -m;
+clang -D BUFFER_SIZE=1000000 $1 && valgrind ./a.out | wc -m;
+clang -D BUFFER_SIZE=10000000 $1 && valgrind ./a.out | wc -m;
+rm a.out
