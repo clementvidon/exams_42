@@ -31,8 +31,8 @@ The workflow is the following:
 
 4. update `check.c` with the mistakes found in `try.c` and document with a
   `TODO` comment
-
-      ssize_t r; // TODO ssize_t instead of long
+  
+    ssize_t r; // TODO ssize_t instead of long
 
 ***IMPROVE***
 
@@ -40,7 +40,7 @@ The workflow is the following:
   `try.c`, the number preceding the `XXX` (here `2`) indicate that this mistake
   has been done for twice `try.c`
 
-      static char *temp; // 2 XXX static keyword missing
+    static char *temp; // 2 XXX static keyword missing
 
 Before the exam I can **check my most common mistakes** using `check.c`.
 After the exam I can **improve my function** using `check.c`.
