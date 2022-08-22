@@ -1,4 +1,3 @@
-/* 220118 */
 #include <unistd.h>
 
 int	ft_isdouble(char c, char *s2)

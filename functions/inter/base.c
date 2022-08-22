@@ -1,4 +1,3 @@
-/* 210716 */
 #include <unistd.h>
 
 int	ft_check_double(char *str1, int str1_index, char c)

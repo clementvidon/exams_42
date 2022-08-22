@@ -1,5 +1,3 @@
-/* 220118 */
-
 #include <unistd.h>
 
 int	ft_match_once(char *str, int index)

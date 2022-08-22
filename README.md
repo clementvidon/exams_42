@@ -1,26 +1,27 @@
 
 #           EXAM 42
 
-## Summary 
+## Summary
 
 This repository is intended to help me **learn** functions by heart for the 42 exams.
-It also aims to **improve** these functions at the same time.
+It also aims to **improve** these functions at the same time.  For this purpose
+I developed the following method.
 
-For this purpose I developed the following method:
+At **level 1** we find `functions` folder as well and the `tools` folder that
+contains my exam `vimrc` or debugging tools to quickly test functions
+improvement.
 
-At **level 1** we find the different 42 exams `rank02 rank03 rank04 ...` as well
-as the `tools` folder that contains my exam `vimrc` or debugging tools to quickly test functions improvement.
+Inside the `functions` directory we find a folder for each function that we can
+meet during the exams.
 
-At **level 2** we find the different subjects that we can meet during the exam.
-
-At **level 3** we find the core of the method, three source files:
+Inside each of these folder we find the core of the method, three source files:
 - `base.c` functional starting point, *must not be modified*.
 - `check.c` the improvement file, with annotation and modifications allowed.
 - `try.c` this file will be used and reused to code and recode the function by
   heart.
 - (optionally) a `doc` and `test` folders.
 
-## Method 
+## Method
 
 The workflow is the following:
 1. recode the function into `try.c`
@@ -31,7 +32,7 @@ The workflow is the following:
 
 4. update `check.c` with the mistakes found in `try.c` and document with a
   `TODO` comment
-  
+
         ssize_t r; // TODO ssize_t instead of long
 
 ***IMPROVE***

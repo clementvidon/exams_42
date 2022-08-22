@@ -1,3 +1,0 @@
-yesterday
-today
-tomorrow
