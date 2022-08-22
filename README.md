@@ -15,18 +15,18 @@ Inside the `functions` directory we find a folder for each function that we can
 meet during the exams.
 
 Inside each of these folder we find the core of the method, three source files:
-- `base.c` functional starting point, *must not be modified*.
-- `check.c` the improvement file, with annotation and modifications allowed.
+- `base.c` functional starting point, *must not be modified*
+- `check.c` the improvement file, with annotation and modifications allowed
 - `try.c` this file will be used and reused to code and recode the function by
-  heart.
-- (optionally) a `doc` and `test` folders.
+  heart
+- (optionally) a `doc` and `test` folders
 
 ## Method
 
 The workflow is the following:
 1. recode the function into `try.c`
 2. debug `try.c`
-3. diff `try.c` and `check.c` (*vim users tip: `:h vimdiff` and look for `do` and `dp`*)
+3. diff `try.c` and `check.c` *(vim users tip: `:h vimdiff` and look for `do` and `dp`)*
 
 ***LEARN***
 
