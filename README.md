@@ -1,5 +1,5 @@
 
-#           EXAM 42
+#           EXAMS 42
 
 ## Summary
 
