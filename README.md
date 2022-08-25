@@ -3,23 +3,22 @@
 
 ## Summary
 
-This repository is intended to help me **learn** functions by heart for the 42 exams.
-It also aims to **improve** these functions at the same time.  For this purpose
-I developed the following method.
+This repository is intended to help me to **learn** functions by heart for the
+42 exams.  It also aims to **improve** these functions at the same time.  For
+this purpose I developed the following method.
 
-At **level 1** we find `functions` folder as well and the `tools` folder that
-contains my exam `vimrc` or debugging tools to quickly test functions
-improvement.
+At level one we find `tool` folder that contains my minimal exam `config`, the
+default 42 vimrc, or debugging tools to quickly check a function improvement.
 
-Inside the `functions` directory we find a folder for each function that we can
-meet during the exams.
+Inside the `func` directory there is a folder for each function that we can
+encounter during the exams.
 
 Inside each of these folder we find the core of the method, three source files:
-- `base.c` functional starting point, *must not be modified*
-- `check.c` the improvement file, with annotation and modifications allowed
+- `base.c` functional starting point, *must not be modified*.
+- `check.c` the improvement file, with annotation and modifications allowed.
 - `try.c` this file will be used and reused to code and recode the function by
-  heart
-- (optionally) a `doc` and `test` folders
+  heart.
+And (optionally) a `doc` and `test` folders.
 
 ## Method
 
@@ -37,11 +36,13 @@ The workflow is the following:
 
 ***IMPROVE***
 
-4. update `check.c` with comments that keep a tracks of mistakes found in
+4. update `check.c` with comments that keep a track of mistakes found in
   `try.c`, the number preceding the `XXX` (here `2`) indicate that this mistake
-  has been done for twice `try.c`
+  has been done for two `try.c` attempt.
 
         static char *temp; // 2 XXX static keyword missing
 
-Before the exam I can **check my most common mistakes** using `check.c`.
-After the exam I can **improve my function** using `check.c`.
+***THUS***
+
+Before the exam **I can check my most common mistakes** using `check.c`.
+After the exam **I can improve my function** using `check.c`.

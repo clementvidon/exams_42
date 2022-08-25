@@ -3,8 +3,8 @@
 
 bindkey -v
 
-# termux
-########
+# tmux
+######
 
 setw -g mode-keys vi
 set -s escape-time 0
