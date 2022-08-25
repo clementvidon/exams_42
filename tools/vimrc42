@@ -1,3 +1,6 @@
+"" Default 42 vimrc ""
+""""""""""""""""""""""
+
 "Do not abandon buffers
 set hidden
 

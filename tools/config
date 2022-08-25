@@ -1,0 +1,25 @@
+# zsh
+#####
+
+bindkey -v
+
+# termux
+########
+
+setw -g mode-keys vi
+set -s escape-time 0
+
+# vim
+#####
+
+se nocp
+se ru sc udf hi=999
+
+nn <space>w <c-w>
+nn : ;
+no <space>= mmgo=G`mzz
+no <space>8 :wa\|lc %:h<CR>
+            \
+            \:sil !clang -Werror -Wall -Wextra -fsanitize=address *.c 2>/tmp/err<CR>
+            \:cfile /tmp/err<CR>:cw5<CR>
+            \:!clear;./a.out<CR>
