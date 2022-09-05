@@ -86,7 +86,8 @@ char	*ft_substr (const char *str, unsigned int start, size_t size)
 	return (sub);
 }
 
-// TODO si str[i] = 0 alors on return NULL, ainsi je peux retirer NULL de substr et remettre stdup("") ?
+// TODO si str[i] = 0 alors on return NULL, ainsi je peux retirer NULL de substr
+// et remettre stdup("") ?
 
 char	*ft_line (const char *str)
 {

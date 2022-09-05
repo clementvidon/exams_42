@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
@@ -85,7 +86,8 @@ char	*ft_substr (const char *str, unsigned int start, size_t size)
 	return (sub);
 }
 
-// TODO si str[i] = 0 alors on return NULL, ainsi je peux retirer NULL de substr et remettre stdup("") ?
+// TODO si str[i] = 0 alors on return NULL, ainsi je peux retirer NULL de substr
+// et remettre stdup("") ?
 
 char	*ft_line (const char *str)
 {
@@ -94,6 +96,8 @@ char	*ft_line (const char *str)
 	i = 0;
 	while (str[i] && str[i] != '\n')
 		i++;
+	if (!str[i])
+		return (NULL);
 	i += (str[i] == '\n');
 	return (ft_substr (str, 0, i));
 }
