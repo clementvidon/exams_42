@@ -31,13 +31,13 @@ shell
  - Nous n'essaierons jamais un "|" immédiatement suivi ou précédé
    par rien ou un autre "|" ou un ";"
 
-- Votre programme doit implementer la commande "built-in" cd et
-  seulement avec un chemin en argument (pas de '-' ou sans argument)
+- Votre programme doit implementer la commande "built-in" *cd* et
+  *seulement avec un chemin en argument* (pas de '-' ou sans argument)
  - si cd n'a pas le bon nombre d'argument votre programme devra
-   afficher dans STDERR "error: cd: bad arguments" suivi d'un '\n'
+   afficher dans STDERR `"error: cd: bad arguments\n"`
  - si cd a echoué votre programme devra afficher dans STDERR
-   "error: cd: cannot change directory to path_to_change" suivi
-   d'un '\n' avec path_to_change remplacer par l'argument à cd
+   `"error: cd: cannot change directory to path_to_change\n"` avec
+   path_to_change remplacer par l'argument à cd
  - une commande cd ne sera jamais immédiatement précédée ou suivie par un "|"
 
 - Votre programme n'a pas à gerer les "wildcards" (\*, ~ etc...)
@@ -46,12 +46,12 @@ shell
   ...)
 
 - Si un appel systeme, sauf execve et chdir, retourne une erreur votre
-  programme devra immédiatement afficher dans STDERR "error: fatal"
-  suivi d'un '\n' et sortir
+  programme devra immédiatement afficher dans STDERR `"error: fatal\n"` et
+  sortir
 
-- Si execve echoue votre programme doit afficher dans STDERR "error:
-  cannot execute executable_that_failed" suivi d'un '\n' en ayant
-  remplacé executable_that_failed avec le chemin du programme qui n'a
+- Si execve echoue votre programme doit afficher dans STDERR `"error:
+  cannot execute executable_that_failed\n"` en ayant remplacé
+  executable_that_failed avec le chemin du programme qui n'a
   pu etre executé (ca devrait etre le premier argument de execve)
 
 - Votre programme devrait pouvoir accepter des centaines de "|" meme
