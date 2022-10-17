@@ -51,22 +51,8 @@ int	main(int ac, char **av, char **env)
 		i = 0;
 		while (av[i] && strcmp(av[i], ";") && strcmp(av[i], "|"))
 			i ++;
-		if (i != 0 && !strcmp(av[0], "cd"))
-		{
-			if (i != 2)
-				ft_putstr_fd(2, "error: cd: bad arguments\n");
-			else if (chdir(av[1]) == -1)
-			{
-				ft_putstr_fd(2, "error: cd: cannot change directory to ");
-				ft_putstr_fd(2, av[1]);
-				write(2, "\n", 1);
-				/* exit(EXIT_FAILURE); */
-				/* la ligne commentée doit restée commentée (effacée) et pendant */
-				/* l'exam il faudra que tu protèges tous les appels systèmes */
-				/* (c'est demandé dans le sujet de l'exam) */
-			}
-		}
-		else if (i != 0 && (av[i] == NULL || !strcmp(av[i], ";")))
+
+		if (i != 0 && (av[i] == NULL || !strcmp(av[i], ";")))
 		{
 			pid = fork();
 			if (pid == 0)
@@ -103,4 +89,3 @@ int	main(int ac, char **av, char **env)
 	close(fd[1]);
 	exit(EXIT_SUCCESS);
 }
-

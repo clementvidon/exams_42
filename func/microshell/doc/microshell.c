@@ -7,39 +7,35 @@
 #define SUCCESS 0
 #define FAILURE 1
 
+/* TODO PROTECT SYSCALL */
+
 /*
- ** ./a.out /bin/ls "|" /usr/bin/grep microshell ";" /bin/echo hello
- ** hello
- ** archi-microshell.c
- ** microshell
- ** microshell_bak.c
- ** microshell.c
- ** shackbei-microshell.c
+ ** gcc microshell.c && ./a.out /bin/cat "|" /bin/cat "|" /bin/ls "|" /usr/bin/grep microshell ";" /bin/echo hello
+ ** gcc microshell.c && ./a.out /bin/ls "|" /usr/bin/grep microshell ";" /bin/echo hello ";" /bin/pwd ";" cd .. ";" /bin/pwd
+ ** gcc microshell.c -g -fsanitize=address && ./a.out /bin/cat "|" /bin/cat "|" /bin/ls
  */
 
-/* not needed in exam, but necessary if you want to use this tester:
- ** https://github.com/Glagan/42-exam-rank-04/blob/master/microshell/test.sh
- ** #ifdef TEST_SH
- ** # define TEST		1
- ** #else
- ** # define TEST		0
- ** #endif
+/*
+ ** @brief      Print an error message.
+ **
+ ** @param[in]  str the error message
+ ** @param[in]  arg what causes the problem
  */
 
-void	ft_puterr(char *str, char *arg)
+void	ft_puterr(char *issue, char *cause)
 {
-	while (*str)
-		write (2, str++, 1);
-	if (arg)
-		while (*arg)
-			write (2, arg++, 1);
+	while (*issue)
+		write (2, issue++, 1);
+	if (cause)
+		while (*cause)
+			write (2, cause++, 1);
 	write (2, "\n", 1);
 }
 
 /*
  ** @brief      Count command length in term of tokens
  **
- ** @param[in]  cmd a ';', '|' or '\0' terminated command
+ ** @param[in]  cmd a shell command
  ** @return     the number of tokens that compose the given command
  */
 
@@ -53,11 +49,18 @@ int	ft_command_len(char **cmd)
 	return (count);
 }
 
+/*
+ ** @brief      Change directory
+ **
+ ** @param[in]  cmd a ';', '|' or '\0' terminated command
+ ** @return     Success of failure.
+ */
+
 int	ft_builtin_cd(char **cmd)
 {
 	if (ft_command_len (cmd) != 2)
 	{
-		ft_puterr ("error: cd: bad arguments\n", NULL);
+		ft_puterr ("error: cd: bad ", "arguments");
 		return (FAILURE);
 	}
 	else if (chdir (cmd[1]) == -1)
@@ -65,78 +68,84 @@ int	ft_builtin_cd(char **cmd)
 		ft_puterr ("error: cd: cannot change directory to ", cmd[1]);
 		return (FAILURE);
 	}
-}
-
-int	ft_exec(char **cmd, int cmdlen, char **env, int stdin_fd)
-{
-	//overwrite ; or | or NULL whith NULL to use the array as input for execve.
-	//we are here in the child so it has no impact in the parent process.
-	cmd[cmdlen] = NULL;
-	dup2(stdin_fd, STDIN_FILENO);
-	close (stdin_fd);
-	if (execve (cmd[0], cmd, env) == -1)
-	{
-		ft_puterr ("error: cannot execute ", cmd[0]);
-		return (FAILURE);
-	}
-}
-
-int	ft_program(char **cmd, int cmdlen, char **env, int stdin_fd)
-{
-	int	pid;
-
-	pid = fork ();
-	if (pid == 0)
-	{
-		if (ft_exec (cmd, cmdlen, env, stdin_fd))
-			return (FAILURE);
-		else
-		{
-			close (stdin_fd);
-			while (waitpid (0, 0, 0) != -1)
-				;
-			stdin_fd = dup (STDIN_FILENO);
-		}
-	}
-	close (stdin_fd);
 	return (SUCCESS);
 }
 
-int	ft_pipe(char **cmd, int cmdlen, char **env, int *stdin_fd)
-{
-	int	fd[2];
-	int	pid;
-	int	i;
+/*
+ ** @brief      Execute a program
+ */
 
-	i = 0;
-	pipe (fd);
-	pid = fork ();
-	if (pid == 0)
+int	ft_exec(char **cmd, int cmdlen, char **env, int stdin_fd)
+{
+	cmd[cmdlen] = NULL;								// Set command end to NULL so we can pass it to execve.
+	dup2 (stdin_fd, STDIN_FILENO);					// Set STDIN_FILENO to stdin_fd
+	close (stdin_fd);								// Close stdin_fd
+	if (execve (cmd[0], cmd, env) == -1)			// Execute the program
 	{
-		i = 1;
-		dup2(fd[1], STDOUT_FILENO);
-		close (fd[0]);
-		close (fd[1]);
-		if (ft_exec (cmd, cmdlen, env, *stdin_fd))
-			return (FAILURE);
-	}
-	else
-	{
-		close (fd[1]);
-		close (*stdin_fd);
-		*stdin_fd = fd[0];
-	}
-	if (i ==1) // TODO make sure it is useful, check fds open at exit
-	{
-		close (fd[0]);
-		close (fd[1]);
+		ft_puterr ("error: cannot execute ", cmd[0]);
+		return (FAILURE);
 	}
 	return (SUCCESS);
 }
 
 /*
- ** gcc microshell && ./a.out /bin/ls "|" /usr/bin/grep microshell ";" /bin/echo hello ";" /bin/pwd ";" cd .. ";" /bin/pwd
+ ** @brief      Handle a command with a program
  */
+
+int	ft_program(char **cmd, int cmdlen, char **env, int stdin_fd)
+{
+	int	pid;
+
+	pid = fork ();									// Creates a new process
+	if (pid == 0)									// The Child
+	{
+		if (ft_exec (cmd, cmdlen, env, stdin_fd))	// Execute the program
+			return (FAILURE);
+	}
+	else											// The Parent
+	{
+		close (stdin_fd);							// Close stdin_fd
+		while (waitpid (0, 0, 0) != -1)				// Wait for the child to finish
+			;
+		stdin_fd = dup (STDIN_FILENO);				// Copy STDOUT_FILENO to stdin_fd
+	}												// XXX useless?
+	close (stdin_fd);								// Close stdin_fd
+	return (SUCCESS);
+}
+
+/*
+ ** @brief      Handle a command with a pipe
+ **
+ ** @param[in]  cmd a shell command
+ ** @param[in]  cmdlen the shell command number of arguments
+ ** @param[in]  env
+ ** @param[i/o] stdin_fd
+ ** @return     Success or failure.
+ */
+
+int	ft_pipe(char **cmd, int cmdlen, char **env, int *stdin_fd)
+{
+	int	fd[2];
+	int	pid;
+
+	pipe (fd);										// Create a pipe
+	pid = fork ();									// Create a new process
+	if (pid == 0)									// The Child
+	{
+		dup2 (fd[1], STDOUT_FILENO);				// Set STDIN_FILENO to fd[1]
+		close (fd[0]);								// close fd[0]
+		close (fd[1]);								// close fd[1]
+		if (ft_exec (cmd, cmdlen, env, *stdin_fd))
+			return (FAILURE);
+	}
+	else											// The Parent
+	{
+		close (fd[1]);								// Close fd[1]
+		close (*stdin_fd);							// Close stdin_fd
+		*stdin_fd = fd[0];							// Set stdin_fd to fd[0]
+	}
+	return (SUCCESS);
+}
 
 /*
  ** @brief      Microshell
@@ -145,14 +154,15 @@ int	ft_pipe(char **cmd, int cmdlen, char **env, int *stdin_fd)
  ** ./microshell /bin/ls "|" /usr/bin/grep microshell ";" /bin/echo hello
  ** ./microshell /bin/pwd ";" cd .. ";" /bin/pwd
  **
- ** - Each while loop covers one command
- ** - A command is ';', '|' or '\0' terminated string or group of string
+ ** - One command per while loop.
+ ** - A shell command is a ';', '|' or '\0' terminated string or group of string.
  **
- ** - The first command starts after the executable name
- ** - The next commands start after their preceding  ';' or '|'
+ ** - First command starts right after the executable name
+ ** - Next commands start after their preceding  ';' or '|'
  **
- ** @param[in]  cmd one or multiple ';', '|' or '\0' terminated commands
+ ** @param[in]  cmd one or multiple commands
  ** @param[in]  env the parent shell environment
+ ** @return     Success of failure.
  */
 
 int	main(int ac, char **cmd, char **env)
@@ -160,47 +170,29 @@ int	main(int ac, char **cmd, char **env)
 	int	cmdlen;
 	int	stdin_fd;
 
+	(void)ac;
 	cmdlen = 0;
 	stdin_fd = dup (STDIN_FILENO);
 	while (cmd[cmdlen] && cmd[cmdlen + 1])
 	{
-
-		/* First command starts after the executable name */
-		/* Next commands start after the last ';' or '|' */
-
 		cmd += cmdlen + 1;
-
-		/* Counts the number of programs in the command. */
-
 		cmdlen = ft_command_len (cmd);
-
-		/* Cd built-in */
-
 		if (cmdlen && !strcmp (cmd[0], "cd"))
 		{
 			if (ft_builtin_cd (cmd) == FAILURE)
 				return (FAILURE);
 		}
-
-		/* Program */
-
 		else if (cmdlen && (cmd[cmdlen] == NULL || *cmd[cmdlen] == ';'))
 		{
 			if (ft_program (cmd, cmdlen, env, stdin_fd) == FAILURE)
 				return (FAILURE);
 		}
-
-		/* Pipe */
-
 		else if (cmdlen && *cmd[cmdlen] == '|')
 		{
 			if (ft_pipe (cmd, cmdlen, env, &stdin_fd) == FAILURE)
 				return (FAILURE);
 		}
-
 	}
-	close (stdin_fd); // TODO fix pipe
-	// if (TEST)	// not needed in exam, but necessary if you want to use this tester:
-	// 	while (1);	// https://github.com/Glagan/42-exam-rank-04/blob/master/microshell/test.sh
+	close (stdin_fd);
 	return (SUCCESS);
 }
