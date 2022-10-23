@@ -75,11 +75,11 @@ int	ft_builtin_cd(char **cmd)
  ** @brief      Execute a program
  */
 
-int	ft_exec(char **cmd, int cmdlen, char **env, int stdin_fd)
+int	ft_exec(char **cmd, int cmdlen, char **env, int fd_cpy)
 {
 	cmd[cmdlen] = NULL;								// Set command end to NULL so we can pass it to execve.
-	dup2 (stdin_fd, STDIN_FILENO);					// Set STDIN_FILENO to stdin_fd
-	close (stdin_fd);								// Close stdin_fd
+	dup2 (fd_cpy, STDIN_FILENO);					// Set STDIN_FILENO to fd_cpy
+	close (fd_cpy);									// Close fd_cpy
 	if (execve (cmd[0], cmd, env) == -1)			// Execute the program
 	{
 		ft_puterr ("error: cannot execute ", cmd[0]);
@@ -92,57 +92,57 @@ int	ft_exec(char **cmd, int cmdlen, char **env, int stdin_fd)
  ** @brief      Handle a command with a program
  */
 
-int	ft_program(char **cmd, int cmdlen, char **env, int stdin_fd)
+int	ft_program(char **cmd, int cmdlen, char **env, int fd_cpy)
 {
 	int	pid;
 
 	pid = fork ();									// Creates a new process
-	if (pid == 0)									// The Child
+	if (pid == 0)									//   [The Child]
 	{
-		if (ft_exec (cmd, cmdlen, env, stdin_fd))	// Execute the program
+		if (ft_exec (cmd, cmdlen, env, fd_cpy))	// Execute the program
 			return (FAILURE);
 	}
-	else											// The Parent
+	else											//   [The Parent]
 	{
-		close (stdin_fd);							// Close stdin_fd
-		while (waitpid (0, 0, 0) != -1)				// Wait for the child to finish
+		close (fd_cpy);								// Close fd_cpy
+		while (wait (NULL) != -1)					// Wait for the child to finish
 			;
-		stdin_fd = dup (STDIN_FILENO);				// Copy STDOUT_FILENO to stdin_fd
+	//fd_cpy = dup (STDIN_FILENO);				// Set fd_cpy to any valid fd
 	}												// XXX useless?
-	close (stdin_fd);								// Close stdin_fd
+	//close (fd_cpy);									// Close fd_cpy
 	return (SUCCESS);
 }
 
 /*
  ** @brief      Handle a command with a pipe
  **
- ** @param[in]  cmd a shell command
- ** @param[in]  cmdlen the shell command number of arguments
+ ** @param[in]  cmd a shell command TODO TOUTE MES COMMANDES (check, might be partout)
+ ** @param[in]  cmdlen the shell command number of arguments TODO maybe the index of the command averifier
  ** @param[in]  env
- ** @param[i/o] stdin_fd
+ ** @param[i/o] fd_cpy
  ** @return     Success or failure.
  */
 
-int	ft_pipe(char **cmd, int cmdlen, char **env, int *stdin_fd)
+int	ft_pipe(char **cmd, int cmdlen, char **env, int *fd_cpy)
 {
 	int	fd[2];
 	int	pid;
 
 	pipe (fd);										// Create a pipe
 	pid = fork ();									// Create a new process
-	if (pid == 0)									// The Child
+	if (pid == 0)									//   [The Child]
 	{
-		dup2 (fd[1], STDOUT_FILENO);				// Set STDIN_FILENO to fd[1]
+		dup2 (fd[1], STDOUT_FILENO);				// Set STDOUT_FILENO to fd[1]
 		close (fd[0]);								// close fd[0]
-		close (fd[1]);								// close fd[1]
-		if (ft_exec (cmd, cmdlen, env, *stdin_fd))
+		close (fd[1]);								// close fd[1] la sortie de notre pipe() comme on la donne a STDOUT_FILENO
+		if (ft_exec (cmd, cmdlen, env, *fd_cpy))
 			return (FAILURE);
 	}
-	else											// The Parent
+	else											//   [The Parent]
 	{
 		close (fd[1]);								// Close fd[1]
-		close (*stdin_fd);							// Close stdin_fd
-		*stdin_fd = fd[0];							// Set stdin_fd to fd[0]
+		close (*fd_cpy);							// Close fd_cpy
+		*fd_cpy = fd[0];							// Set fd_cpy to fd[0]
 	}
 	return (SUCCESS);
 }
@@ -168,11 +168,11 @@ int	ft_pipe(char **cmd, int cmdlen, char **env, int *stdin_fd)
 int	main(int ac, char **cmd, char **env)
 {
 	int	cmdlen;
-	int	stdin_fd;
+	int	fd_cpy;
 
 	(void)ac;
 	cmdlen = 0;
-	stdin_fd = dup (STDIN_FILENO);
+	fd_cpy = dup (STDIN_FILENO); 					// set fd_cpy to any valid fd
 	while (cmd[cmdlen] && cmd[cmdlen + 1])
 	{
 		cmd += cmdlen + 1;
@@ -182,17 +182,16 @@ int	main(int ac, char **cmd, char **env)
 			if (ft_builtin_cd (cmd) == FAILURE)
 				return (FAILURE);
 		}
-		else if (cmdlen && (cmd[cmdlen] == NULL || *cmd[cmdlen] == ';'))
+		else if (cmdlen && (cmd[cmdlen] == NULL || *cmd[cmdlen] == ';')) // == uniquement si commande unique sans pipe apres !!!!!!!
 		{
-			if (ft_program (cmd, cmdlen, env, stdin_fd) == FAILURE)
+			if (ft_program (cmd, cmdlen, env, fd_cpy) == FAILURE)
 				return (FAILURE);
 		}
-		else if (cmdlen && *cmd[cmdlen] == '|')
+		else if (cmdlen && *cmd[cmdlen] == '|') // ex. ls | wc (ls passe ici et wc passe a programme) cat cat ls (cat et cat passse en DEUX fois ici et ls passe au dessus)
 		{
-			if (ft_pipe (cmd, cmdlen, env, &stdin_fd) == FAILURE)
+			if (ft_pipe (cmd, cmdlen, env, &fd_cpy) == FAILURE)
 				return (FAILURE);
 		}
 	}
-	close (stdin_fd);
 	return (SUCCESS);
 }
