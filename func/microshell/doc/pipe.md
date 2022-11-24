@@ -1,53 +1,100 @@
 
     cat | ls;
 
-0. *MAIN*
+# #### #
+# MAIN #
+# #### #
 
     fdcpy   = STDIN
 
-1. *FT_PIPE* (write or read & write)
+*STDIN=0*
+*STDOUT=1*
+*fdcpy=3*
 
-    *fdcpy  = STDIN         <inherited from main>
+# ####### #
+# FT_PIPE #
+# ####### #
 
-    fd[2]   = pipe
+    *fdcpy  => STDIN    3       <INHERITED FROM MAIN [PREV PIPE]>
 
-   >> CHILD << (write)
+    p[2]    = pipe      4,5
 
-    close   PIPEIN
+*STDIN=0*
+*STDOUT=1*
+*fdcpy=3*
+*p[0]=4*
+*p[1]=5*
 
-    STDOUT  => PIPEOUT      STDOUT points to PIPEOUT
-    close   PIPEOUT
+#   PIPE CHILD
+# ############
 
-    STDIN   => *fdcpy       STDIN  points to *fdcpy
-    close   *fdcpy
+    close   p[0]        4X
 
-> Exec:
-> | (STDIN is fdcpy) STDIN->PRG->STDOUT
+    STDOUT  => p[1]     1⇒5     STDOUT points to p[1]
+    close   p[1]        5X
 
-   >> PAREN << (read)
+    STDIN   => *fdcpy   0       STDIN  points to *fdcpy
+    close   *fdcpy      3X
 
-    close   PIPEOUT
-    close   *fdcpy
-    *fdcpy  = PIPEIN        *fdcpy become PIPEIN
+*STDIN=0*
+*STDOUT=1* ⇒ p[1]
+*fdcpy=X*
+*p[0]=X*
+*p[1]=X*
 
-2. *FT_PROG*  (read)
+- ***Pipe Child*** output to PIPE OUT
+- ***Pipe Child*** input from * fdcpy (`cat | cat | ls`)
+- ***Pipe Child*** execute (`[fdcpy >] exec > PIPE OUT`)
 
-    fdcpy  = PIPEIN         <inherited from ft_pipe>
+#   PIPE PAREN
+# ############
 
-   >> CHILD <<
+    close   p[1]        X5
+    close   *fdcpy      X3
+    *fdcpy  = p[0]      3→4     *fdcpy become p[0]
 
-    STDIN   => fdcpy        STDIN  points to fdcpy
+*STDIN=0*
+*STDOUT=1*
+*fdcpy=4*
+*p[0]=4*
+*p[1]=X*
+
+- ***Pipe Parent*** saves PIPE IN into * fdcpy
+
+# ####### #
+# FT_PROG #
+# ####### #
+
+    fdcpy  = p[0]       4       <INHERITED FROM FT_PIPE>
+
+*STDIN=0*
+*STDOUT=1*
+*fdcpy=4*
+
+#   PROG CHILD
+# ############
+
+    STDIN   => fdcpy    0       STDIN  points to fdcpy
+    close   fdcpy       4X
+
+*STDIN=0*  ⇒ fdcpy
+*STDOUT=1*
+
+*fdcpy=4*  X
+
+- ***Prog Child*** input from fdcpy
+- ***Prog Child*** execute
+
+#   PROG PAREN
+# ############
+
     close   fdcpy
 
-> Exec:
-> | (STDIN is fdcpy) STDIN->PRG->STDOUT
-
-   >> PAREN <<
-
-    close   fdcpy
+*STDIN=0*  X
+*STDOUT=1*
+*fdcpy=4*
 
 ---------------------------------------------------------------------
-
 
 WRITE TO PIPE
 
@@ -70,25 +117,45 @@ READ FROM PIPE
       cmd: | ← I/O → …
 
 
+- ***Pipe Parent*** saves PIPE IN into * fdcpy
+
+- ***Pipe Child*** output to PIPE OUT
+- ***Pipe Child*** input from * fdcpy (`cat | cat | ls`)
+    fdcpy = PIPE IN from prev ft_pipe parent ?
+    parce que les multi pipes sont des poupées russes ?
+- ***Pipe Child*** execute (`[fdcpy >] exec > PIPE OUT`)
+
+- ***Prog Child*** input from fdcpy
+- ***Prog Child*** execute
 
 
+EXAMPLE TODO
+
+  "echo a | cat | grep a"
+
+  PIPE1:
+   paren
+    close PIPE1 OUT (pour pas recevoir l'output du child)
+    fdcpy = PIPE1 IN
+
+   child
+    close PIPE1 IN (unused)
+
+    STDIN = fdcpy
+    (echo a)> PIPE1 OUT (STDOUT redirect to PIPE1 OUT)
+
+  PIPE2:
+   paren
+    close PIPE2 OUT (pour pas recevoir l'output du child)
+    fdcpy = PIPE2 IN
+
+   child
+    close PIPE2 IN (unused)
+
+    STDIN = fdcpy (PIPE1 IN)
+    PIPE2 IN >(cat)> PIPE2 OUT (STDOUT redirect to PIPE2 OUT)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  PROG:
+   paren
+   child

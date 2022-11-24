@@ -36,91 +36,74 @@ void	ft_program(char **cmd, int cmdlen, char **env, int fdcpy) // XXX fdcpy
 
 	pid = fork ();
 
-	dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-	dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-	dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
+	/* dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN_FILENO); */
+	/* dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT_FILENO); */
+	/* dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy); */
 
 	if (pid == 0)
 	{
-
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
 
 		cmd[cmdlen] = NULL;
 
 		dup2 (fdcpy, STDIN_FILENO);		// XXX Set STDIN to our fdcpy
 		close (fdcpy);					// XXX Close fdcpy
 
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
+		/* dprintf (2, "child %s: %i: STDIN=%i\n", __func__, __LINE__, STDIN_FILENO); */
+		/* dprintf (2, "child %s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT_FILENO); */
+		/* dprintf (2, "child %s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy); */
 
 		if (execve (cmd[0], cmd, env) == -1)
 			dprintf (2, "Error: EXECVE(2)\n");
 	}
 	else
 	{
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
-
 
 		close (fdcpy);					// XXX Close unused fdcpy
 
 		while (wait (NULL) != -1)
 			;
 
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
+		/* dprintf (2, "paren %s: %i: STDIN=%i\n", __func__, __LINE__, STDIN_FILENO); */
+		/* dprintf (2, "paren %s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT_FILENO); */
+		/* dprintf (2, "paren %s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy); */
 
 	}
-
-	dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-	dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-	dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
-
 }
 
 int	ft_pipe(char **cmd, int cmdlen, char **env, int *fdcpy)
 {
-	int	fd[2];
+	int	p[2];
 	int	pid;
 
-	pipe (fd);							// Create a pipe
+	pipe (p);							// Create a pipe
 
-	dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-	dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-	dprintf (2, "%s: %i: fd[0]=%i\n", __func__, __LINE__, fd[0]);
-	dprintf (2, "%s: %i: fd[1]=%i\n", __func__, __LINE__, fd[1]);
-	dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
+	/* dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN_FILENO); */
+	/* dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT_FILENO); */
+	/* dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, *fdcpy); */
+	/* dprintf (2, "%s: %i: p[0]=%i\n", __func__, __LINE__, p[0]); */
+	/* dprintf (2, "%s: %i: p[1]=%i\n", __func__, __LINE__, p[1]); */
 
 	pid = fork ();						// Create a new process
 	if (pid == 0)                       //   [The Child]
 	{
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fd[0]=%i\n", __func__, __LINE__, fd[0]);
-		dprintf (2, "%s: %i: fd[1]=%i\n", __func__, __LINE__, fd[1]);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
 
-		close (fd[0]);                  // close unused PIPEIN
+		close (p[0]);                  // close unused PIPEIN
 
-		dup2 (fd[1], STDOUT_FILENO);    // Set STDOUT to PIPEOUT
-		close (fd[1]);               	// close PIPEOUT
+		dup2 (p[1], STDOUT_FILENO);    // Set STDOUT to PIPEOUT
+		close (p[1]);               	// close PIPEOUT
 
-		/* 'fd[1]' fd is copied to STDOUT. */
+		/* 'p[1]' fd is copied to STDOUT. */
 		/* STDOUT no longer connect to fd 1. */
 
+		// XXX multi pipe case (echo a | cat | grep a)
 		dup2 (*fdcpy, STDIN_FILENO);	// Set STDIN to our fdcpy
 		close (*fdcpy);					// Close fdcpy
 
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fd[0]=%i\n", __func__, __LINE__, fd[0]);
-		dprintf (2, "%s: %i: fd[1]=%i\n", __func__, __LINE__, fd[1]);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
+		/* dprintf (2, "child %s: %i: STDIN=%i\n", __func__, __LINE__, STDIN_FILENO); */
+		/* dprintf (2, "child %s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT_FILENO); */
+		/* dprintf (2, "child %s: %i: fdcpy=%i\n", __func__, __LINE__, *fdcpy); */
+		/* dprintf (2, "child %s: %i: p[0]=%i\n", __func__, __LINE__, p[0]); */
+		/* dprintf (2, "child %s: %i: p[1]=%i\n", __func__, __LINE__, p[1]); */
 
 		cmd[cmdlen] = NULL;				// Delimit the command with a NULL
 		if (execve (cmd[0], cmd, env) == -1)
@@ -129,30 +112,17 @@ int	ft_pipe(char **cmd, int cmdlen, char **env, int *fdcpy)
 	else                                //   [The Parent]
 	{
 
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fd[0]=%i\n", __func__, __LINE__, fd[0]);
-		dprintf (2, "%s: %i: fd[1]=%i\n", __func__, __LINE__, fd[1]);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
-
-		close (fd[1]);                  // Close fd[1]
+		close (p[1]);                  // Close p[1]
 		close (*fdcpy);                // Close fdcpy
-		*fdcpy = fd[0];                // Set fdcpy to fd[0]
+		*fdcpy = p[0];                // Set fdcpy to p[0]
 
-		dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-		dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-		dprintf (2, "%s: %i: fd[0]=%i\n", __func__, __LINE__, fd[0]);
-		dprintf (2, "%s: %i: fd[1]=%i\n", __func__, __LINE__, fd[1]);
-		dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
+		/* dprintf (2, "paren %s: %i: STDIN=%i\n", __func__, __LINE__, STDIN_FILENO); */
+		/* dprintf (2, "paren %s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT_FILENO); */
+		/* dprintf (2, "paren %s: %i: fdcpy=%i\n", __func__, __LINE__, *fdcpy); */
+		/* dprintf (2, "paren %s: %i: p[0]=%i\n", __func__, __LINE__, p[0]); */
+		/* dprintf (2, "paren %s: %i: p[1]=%i\n", __func__, __LINE__, p[1]); */
 
 	}
-
-	dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-	dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-	dprintf (2, "%s: %i: fd[0]=%i\n", __func__, __LINE__, fd[0]);
-	dprintf (2, "%s: %i: fd[1]=%i\n", __func__, __LINE__, fd[1]);
-	dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
-
 	return (SUCCESS);
 }
 
@@ -165,16 +135,18 @@ int	main(int ac, char **av, char **env)
 	(void)env;
 	cmdlen = 0;
 	fdcpy = dup (STDIN_FILENO); // XXX Init
-	dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN);
-	dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT);
-	dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy);
+
+	/* dprintf (2, "%s: %i: STDIN=%i\n", __func__, __LINE__, STDIN_FILENO); */
+	/* dprintf (2, "%s: %i: STDOUT=%i\n", __func__, __LINE__, STDOUT_FILENO); */
+	/* dprintf (2, "%s: %i: fdcpy=%i\n", __func__, __LINE__, fdcpy); */
+
 	while (av[cmdlen] && av[cmdlen + 1])
 	{
 		av += cmdlen + 1;
 		cmdlen = ft_cmdlen (av);
 		if (av[cmdlen] == NULL || *av[cmdlen] == ';')
 		{
-			dprintf (2, ">PRG<\n");
+			dprintf (2, ">PROG<\n");
 			ft_program (av, cmdlen, env, fdcpy);
 		}
 		else if (*av[cmdlen] == '|')
@@ -183,5 +155,4 @@ int	main(int ac, char **av, char **env)
 			ft_pipe (av, cmdlen, env, &fdcpy);
 		}
 	}
-	return (0);
-}
+	return (0); }
