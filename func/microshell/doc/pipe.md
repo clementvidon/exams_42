@@ -317,3 +317,44 @@ prevpin = 3 (closed)
 STDIN   = 0 (closed)
 STDOUT  = 1 (closed)
 prevpin = 3 (closed)
+
+
+
+
+
+
+GPT
+    int main() {
+    // Create an array to store the pipes
+    int pipes[MAX_PIPES][2];
+    int num_pipes = 0;
+
+    while (1) {
+        // Create a new pipe
+        pipe(pipes[num_pipes]);
+
+        // Fork the first program and redirect its output to the new pipe
+        pid_t pid = fork();
+        if (pid == 0) {
+        // This is the child process
+        dup2(pipes[num_pipes][1], 1); // redirect stdout to the new pipe
+        close(pipes[num_pipes][0]);   // close unused end of the new pipe
+        execlp("program1", "program1", NULL);
+        } else {
+        // This is the parent process
+        // Fork the second program and redirect its input to the new pipe
+        pid_t pid2 = fork();
+        if (pid2 == 0) {
+            // This is the child process
+            dup2(pipes[num_pipes][0], 0); // redirect stdin to the new pipe
+            close(pipes[num_pipes][1]);   // close unused end of the new pipe
+            execlp("program2", "program2", NULL);
+        }
+        }
+
+        // Increment the number of pipes
+        num_pipes++;
+    }
+    }
+
+
