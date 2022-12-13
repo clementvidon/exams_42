@@ -128,10 +128,8 @@ TODO check les close / open, not needed etc.
 > Dup2 = dup to = PIPEOUT is duplicated to STDOUT = redirect STDOUT to PIPEOUT
 
 TODO
-
 try fork dans le parent pour 2 enfants et changer le parsing du while pour que
 ca marche comme ca 2 while pour exec un pipe (et pas de ft_prg) au lieu de 3.
-
 et ft_prg uniquement si pas de pipe.
 
 ##  MAIN()
@@ -309,7 +307,6 @@ prevpin = 3 (closed)
 
 21. *Close prepvin*
     close (prevpin);
-> P
 
 22. *Wait for children*
 > while (wait (NULL) != -1);
@@ -317,11 +314,6 @@ prevpin = 3 (closed)
 STDIN   = 0 (closed)
 STDOUT  = 1 (closed)
 prevpin = 3 (closed)
-
-
-
-
-
 
 GPT
     int main() {
@@ -351,10 +343,86 @@ GPT
             execlp("program2", "program2", NULL);
         }
         }
-
         // Increment the number of pipes
         num_pipes++;
     }
     }
 
 
+
+
+
+- A pipe is a unidirectional data channel made of the two file descriptors
+  pipefd[0] its read end and pipefd[1] its write end.  *Data WRITTEN TO THE
+  WRITE END of the pipe is buffered* by the kernel until it is read from the
+  read end of the pipe.
+
+Creates a pipe and fork to create a child process; the child inherits a
+duplicate set of fds that refer to the same pipe.  After the fork each process
+closes the fds that it doesn't need for the pipe.  The **child** writes to the
+pipe and the **next child** reads while the **parent**… TODO
+
+    C1        C2        C3
+
+
+         P1        P2
+
+        [0,1]     [0,1]
+
+# CMD1
+
+**child**  `ecrit dans le pipe`
+ - close              P1[0]     Unused.
+ - Redirect Stdin  to *prevpipe*  Here *Stdin* (cf. prevpipe init).
+ - close              prevpipe  Not needed anymore.
+ - Redirect Stdout to P1[1]     Fill the pipe with CMD1 output.
+ - close              P1[1]     Not needed anymore.
+ - exec
+
+      Stdin → CMD1    → P1[1]
+                        |   |    X
+                P1[0]   | ↓ |
+                -----   |   .
+
+**parent** `transmet le read end du pipe au prochain child`
+ - close              P1[1]     Unused
+ - prevpipe         = P1[0]     Save prepvin for CMD2 Stdin.
+
+                        .   |   -----
+                        | ↓ |   P1[1]
+                        |   |
+                        P1[0] → prevpipe
+# CMD2
+
+**child**
+ - close              P2[0]     Unused.
+ - Redirect Stdin  to *prevpipe*  Here *P1[0]* (the previous P[0]).
+ - close              prevpipe  Not needed anymore.
+ - Redirect Stdout to P2[1]     Fill the pipe with CMD1 output.
+ - close              P2[1]     Not needed anymore.
+ - exec
+
+      prevpipe → CMD2 → P2[1]
+                        |   |
+                        | ↓ |      PIPE 2
+                        |   .
+**parent**
+ - close              P2[1]     Unused
+ - prevpipe         = P2[0]     For the next child Stdin.
+
+                        .   |
+                        | ↓ |
+                        |   |
+                        P2[0] → prevpipe
+# CMD3
+
+**child**
+ - Redirect Stdin  to *prevpipe*  Here *P2[0]* (the previous P[0]).
+ - close              prevpipe  Not needed anymore (TODO cf open fd leak).
+ - exec
+
+      prevpipe → CMD2 → Stdout
+
+**parent**
+ - close *prevpipe*             Unused
+ - wait for children

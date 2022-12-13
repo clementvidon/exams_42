@@ -3,7 +3,11 @@
 #include <string.h>
 #include <stdio.h>
 
-# define PIPEIN p[0]
+#include <stdlib.h>
+
+
+# define MAX_PIPES 1080
+# define PIPEIN  p[0]
 # define PIPEOUT p[1]
 
 int	ft_cmdlen(char **cmd)
@@ -16,29 +20,6 @@ int	ft_cmdlen(char **cmd)
 	return (len);
 }
 
-void	ft_program(char **cmd, int cmdlen, char **env, int prevpin)
-{
-	int	pid;
-
-	pid = fork ();
-	if (pid == 0)
-	{
-
-		cmd[cmdlen] = NULL;
-
-		dup2 (prevpin, STDIN_FILENO);		// XXX Set STDIN to our prevpin
-		close (prevpin);					// XXX Close prevpin
-		if (execve (cmd[0], cmd, env) == -1)
-			dprintf (2, "Error: EXECVE(2)\n");
-	}
-	else
-	{
-		close (prevpin);					// XXX Close unused prevpin
-		while (wait (NULL) != -1)
-			;
-	}
-}
-
 /*
  ** @brief
  **
@@ -46,67 +27,104 @@ void	ft_program(char **cmd, int cmdlen, char **env, int prevpin)
  ** so the PIPE 2 child can access it
  */
 
-void	ft_pipe(char **cmd, int cmdlen, char **env, int *prevpin)
+// void	ft_pipe(char **cmd, int cmdlen, char **env, int *prevpin)
+// {
+// 	int		p[2];
+// 	pid_t	pid;
+//
+// 	pipe (p);								// Creates a pipe
+// 	pid = fork ();							// Creates a child processes
+// 	if (pid == 0)                       	//   [The Child]
+// 	{
+//
+// 		close (PIPEIN);                  	// Close unused PIPEIN
+//
+// 		dup2 (PIPEOUT, STDOUT_FILENO);    	// Connect PIPEOUT to STDOUT_FILENO
+// 		close (PIPEOUT);               		// close PIPEOUT
+//
+// 		/* 'PIPEOUT' fd is copied to STDOUT. */
+// 		/* STDOUT no longer connect to fd 1. */
+//
+// 		// multi pipe case (echo a | cat | grep a)
+// 		dup2 (*prevpin, STDIN_FILENO);		// Connect PIPEIN to STDIN_FILENO
+// 		close (*prevpin);					// Close *prevpin
+//
+// 		cmd[cmdlen] = NULL;					// Delimit the command with a NULL
+// 		if (execve (cmd[0], cmd, env) == -1)
+// 			dprintf (2, "Error: EXECVE(2)\n");
+// 	}
+// 	else                                	//   [The Parent]
+// 	{
+// 		close (PIPEOUT);                  	// Close PIPEOUT
+// 		close (*prevpin);                	// Close *prevpin
+// 		*prevpin = PIPEIN;                	// Set *prevpin to PIPEIN
+// 	}
+// }
+
+int ft_pipe(char **av, char **env)
 {
-	int		p[2];
-	pid_t	pid;
+	int fdcpy = dup (STDIN_FILENO);
+	int pipes[MAX_PIPES][2];
+	int num_pipes = 0;
+	int cmdlen = 0;
 
-	pipe (p);								// Creates a pipe
-	pid = fork ();							// Creates a child processes
-	if (pid == 0)                       	//   [The Child]
+	while (av[cmdlen] && av[cmdlen + 1])
 	{
+		pipe(pipes[num_pipes]);
 
-		close (PIPEIN);                  	// Close unused PIPEIN
+		av += cmdlen + 1;
+		cmdlen = ft_cmdlen (av);
 
-		dup2 (PIPEOUT, STDOUT_FILENO);    	// Connect PIPEOUT to STDOUT_FILENO
-		close (PIPEOUT);               		// close PIPEOUT
+		pid_t pid = fork();
+		if (pid == 0) // CHILD 1
+		{
+			if (av[cmdlen] && *av[cmdlen] == '|')
+			{
+				dprintf(2, "NOT LAST> %s	%i\n", av[0], cmdlen);
 
-		/* 'PIPEOUT' fd is copied to STDOUT. */
-		/* STDOUT no longer connect to fd 1. */
+				dup2(pipes[num_pipes][1], 1);
+				close(pipes[num_pipes][0]);
 
-		// multi pipe case (echo a | cat | grep a)
-		dup2 (*prevpin, STDIN_FILENO);		// Connect PIPEIN to STDIN_FILENO
-		close (*prevpin);					// Close *prevpin
+				dup2 (fdcpy, STDIN_FILENO); // Redirect STDIN to STDIN or fdcpy
+				close (fdcpy);
 
-		cmd[cmdlen] = NULL;					// Delimit the command with a NULL
-		if (execve (cmd[0], cmd, env) == -1)
-			dprintf (2, "Error: EXECVE(2)\n");
+				av[cmdlen] = NULL;
+				execve (av[0], av, env);
+			}
+		}
+		else
+		{
+			dprintf (2, "C\n");
+			pid_t pid2 = fork();
+			if (pid2 == 0) // CHILD 2
+			{
+				if (av[cmdlen] == NULL || *av[cmdlen] == ';')
+				{
+					dprintf(2, "NOT FIRST> %s	%i\n", av[0], cmdlen);
+
+					dup2(pipes[num_pipes][0], 0);
+					close(pipes[num_pipes][1]);
+
+					av[cmdlen] = NULL;
+					execve (av[0], av, env);
+				}
+			}
+		}
+		num_pipes++;
 	}
-	else                                	//   [The Parent]
-	{
-		close (PIPEOUT);                  	// Close PIPEOUT
-		close (*prevpin);                	// Close *prevpin
-		*prevpin = PIPEIN;                	// Set *prevpin to PIPEIN
-	}
+	return (1);
 }
 
+
 /*
- ** @brief
+j** @brief
  */
 
 int	main(int ac, char **av, char **env)
 {
-	int	cmdlen;
-	int	prevpin;
-
 	(void)ac;
 	(void)env;
-	cmdlen = 0;
-	prevpin = dup (STDIN_FILENO); // Init prevpin
-	while (av[cmdlen] && av[cmdlen + 1])
-	{
-		av += cmdlen + 1;
-		cmdlen = ft_cmdlen (av);
-		if (av[cmdlen] == NULL || *av[cmdlen] == ';')
-		{
-			dprintf (2, ">PROG<\n");
-			ft_program (av, cmdlen, env, prevpin);
-		}
-		else if (*av[cmdlen] == '|')
-		{
-			dprintf (2, ">PIPE<\n");
-			ft_pipe (av, cmdlen, env, &prevpin);
-		}
-	}
+	ft_pipe (av, env);
 	return (0);
 }
+
