@@ -1,35 +1,37 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/wait.h>
 
-void	ft_perror(char *s1, char *s2)
+void	ft_fatal ()
 {
-	while (s1 && *s1)
-		write (STDERR_FILENO, s1++, 1);
-	while (s2 && *s2)
-		write (STDERR_FILENO, s2++, 1);
-	write (STDERR_FILENO, "\n", 1);
-}
-
-void	ft_fatal()
-{
-	write (STDERR_FILENO, "error: fatal\n", 13);
+	write (2, "error: fatal\n", 13);
 	exit (1);
 }
 
-void	ft_program(char **cmd, int len, char **env, int *prevpipe)
+void	ft_perror (char *s1, char *s2)
+{
+	while (s1 && *s1)
+		write (2, s1++, 1);
+	while (s2 && *s2)
+		write (2, s2++, 1);
+	write (2, "\n", 1);
+}
+
+void	ft_program (char **cmd, int len, char **env, int *prevpipe)
 {
 	pid_t	cpid;
 
 	cpid = fork ();
 	if (cpid == -1)
-		ft_fatal();
+		ft_fatal ();
 	else if (cpid == 0)
 	{
-		dup2 (*prevpipe, STDIN_FILENO);
-		close (*prevpipe);
+		if (dup2 (*prevpipe, STDIN_FILENO) == -1)
+			ft_fatal ();
+		if (close (*prevpipe) == -1)
+			ft_fatal ();
 		cmd[len] = NULL;
 		if (execve (cmd[0], cmd, env) == -1)
 			ft_perror ("error: cannot execute ", cmd[0]);
@@ -46,30 +48,38 @@ void	ft_pipe(char **cmd, int len, char **env, int *prevpipe)
 	int		pipefd[2];
 	pid_t	cpid;
 
-	pipe (pipefd);
+	if (pipe (pipefd) == -1)
+		ft_fatal ();
 	cpid = fork ();
 	if (cpid == -1)
 		ft_fatal ();
 	else if (cpid == 0)
 	{
-		close (pipefd[0]);
-		dup2 (*prevpipe, STDIN_FILENO);
-		close (*prevpipe);
-		dup2 (pipefd[1], STDOUT_FILENO);
-		close (pipefd[1]);
+		if (close (pipefd[0]) == -1)
+			ft_fatal ();
+		if (dup2 (*prevpipe, STDIN_FILENO) == -1)
+			ft_fatal ();
+		if (close (*prevpipe) == -1)
+			ft_fatal ();
+		if (dup2 (pipefd[1], STDOUT_FILENO) == -1)
+			ft_fatal ();
+		if (close (pipefd[1]) == -1)
+			ft_fatal ();
 		cmd[len] = NULL;
 		if (execve (cmd[0], cmd, env) == -1)
 			ft_perror ("error: cannot execute ", cmd[0]);
 	}
 	else
 	{
-		close (pipefd[1]);
-		close (*prevpipe);
+		if (close (pipefd[1]) == -1)
+			ft_fatal ();
+		if (close (*prevpipe) == -1)
+			ft_fatal ();
 		*prevpipe = pipefd[0];
 	}
 }
 
-void	ft_cd(char **cmd, int len)
+void	ft_cd (char **cmd, int len)
 {
 	if (len != 2)
 		ft_perror ("error: cd: bad arguments", NULL);
@@ -87,13 +97,17 @@ int	ft_len(char **cmd)
 	return (len);
 }
 
+
+
 int	main(int ac, char **cmd, char **env)
 {
 	int	prevpipe;
 	int	len;
 
-	(void)ac;
+	(void) ac;
 	prevpipe = dup (STDIN_FILENO);
+	if (prevpipe == -1)
+		ft_fatal ();
 	len = 0;
 	while (cmd[len] && cmd[len + 1])
 	{
@@ -108,6 +122,7 @@ int	main(int ac, char **cmd, char **env)
 		else if (cmd[len] == NULL || *cmd[len] == ';')
 			ft_program (cmd, len, env, &prevpipe);
 	}
-	close (prevpipe);
+	if (close (prevpipe) == -1)
+		ft_fatal ();
 	return (0);
 }

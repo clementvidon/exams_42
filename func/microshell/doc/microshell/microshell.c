@@ -113,13 +113,14 @@ int	main(int ac, char **cmd, char **env)
 		len = ft_len (cmd);
 		if (*cmd[0] == ';')
 			continue ;
-		if (!strcmp(cmd[0], "cd"))
+		else if (!strcmp(cmd[0], "cd"))
 			ft_cd (cmd, len);
 		else if (cmd[len] && *cmd[len] == '|')
 			ft_pipe (cmd, len, env, &prevpipe);
 		else if (cmd[len] == NULL || *cmd[len] == ';')
 			ft_program (cmd, len, env, &prevpipe);
 	}
-	close (prevpipe);
+	if (close (prevpipe) == -1)
+		ft_fatal ();
 	return (0);
 }
