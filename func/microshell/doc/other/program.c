@@ -3,6 +3,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+/*
+ ** @brief      Return the length of the pointed command line
+ */
+
 int	ft_cmdlen(char **cmd)
 {
 	int	len;
@@ -13,15 +17,24 @@ int	ft_cmdlen(char **cmd)
 	return (len);
 }
 
+/*
+ ** @brief      Handle program exec
+ **
+ ** - creates a process dedicated to the execution
+ ** - lock the end of the command with a NULL termination
+ ** - execute
+ */
+
 void	ft_program(char **cmd, int cmdlen, char **env)
 {
-	pid_t	cpid;
+	int	pid;
 
-	cpid = fork ();
-	if (cpid == 0)
+	pid = fork ();
+	if (pid == 0)
 	{
 		cmd[cmdlen] = NULL;
-		execve (cmd[0], cmd, env);
+		if (execve (cmd[0], cmd, env) == -1)
+			dprintf (2, "Error: EXECVE(2)\n");
 	}
 	else
 	{
@@ -29,6 +42,12 @@ void	ft_program(char **cmd, int cmdlen, char **env)
 			;
 	}
 }
+
+/*
+ ** @brief      Main
+ **
+ ** ./a.out /bin/echo "(:" ";" /bin/echo ":)"
+ */
 
 int	main(int ac, char **av, char **env)
 {
@@ -41,14 +60,15 @@ int	main(int ac, char **av, char **env)
 		av += cmdlen + 1;
 		cmdlen = ft_cmdlen (av);
 		if (!strcmp (av[0], "cd"))
-			dprintf (1, "ft_cd\n");
-		else if (av[cmdlen] && *av[cmdlen] == '|')
-			dprintf (1, "ft_pipe\n");
+			dprintf (2, "CD\n");
 		else if (av[cmdlen] == NULL || *av[cmdlen] == ';')
 		{
-			dprintf (1, "ft_program\n");
+			dprintf (2, "PRG\n");
 			ft_program (av, cmdlen, env);
 		}
+		else if (*av[cmdlen] == '|')
+			dprintf (2, "PIPE\n");
 	}
 	return (0);
 }
+

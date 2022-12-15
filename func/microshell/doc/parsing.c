@@ -23,11 +23,11 @@ int	main(int ac, char **av, char **env)
 		av += cmdlen + 1;
 		cmdlen = ft_cmdlen (av);
 		if (!strcmp (av[0], "cd"))
-			dprintf (2, "ft_cd\n");
+			dprintf (1, "ft_cd\n");
+		else if (av[cmdlen] && *av[cmdlen] == '|')
+			dprintf (1, "ft_pipe\n");
 		else if (av[cmdlen] == NULL || *av[cmdlen] == ';')
-			dprintf (2, "ft_program\n");
-		else if (*av[cmdlen] == '|')
-			dprintf (2, "ft_pipe\n");
+			dprintf (1, "ft_program\n");
 	}
 	return (0);
 }

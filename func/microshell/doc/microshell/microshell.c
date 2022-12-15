@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <stdlib.h>
 
 void	ft_perror(char *s1, char *s2)
@@ -13,7 +13,7 @@ void	ft_perror(char *s1, char *s2)
 	write (STDERR_FILENO, "\n", 1);
 }
 
-void	ft_fatal()
+void	ft_fatal(void)
 {
 	write (STDERR_FILENO, "error: fatal\n", 13);
 	exit (1);
@@ -25,11 +25,13 @@ void	ft_program(char **cmd, int len, char **env, int *prevpipe)
 
 	cpid = fork ();
 	if (cpid == -1)
-		ft_fatal();
+		ft_fatal ();
 	else if (cpid == 0)
 	{
-		dup2 (*prevpipe, STDIN_FILENO);
-		close (*prevpipe);
+		if (dup2 (*prevpipe, STDIN_FILENO) == -1)
+			ft_fatal ();
+		if (close (*prevpipe) == -1)
+			ft_fatal ();
 		cmd[len] = NULL;
 		if (execve (cmd[0], cmd, env) == -1)
 			ft_perror ("error: cannot execute ", cmd[0]);
@@ -46,25 +48,33 @@ void	ft_pipe(char **cmd, int len, char **env, int *prevpipe)
 	int		pipefd[2];
 	pid_t	cpid;
 
-	pipe (pipefd);
+	if (pipe (pipefd) == -1)
+		ft_fatal ();
 	cpid = fork ();
 	if (cpid == -1)
 		ft_fatal ();
 	else if (cpid == 0)
 	{
-		close (pipefd[0]);
-		dup2 (*prevpipe, STDIN_FILENO);
-		close (*prevpipe);
-		dup2 (pipefd[1], STDOUT_FILENO);
-		close (pipefd[1]);
+		if (close (pipefd[0]) == -1)
+			ft_fatal ();
+		if (dup2 (*prevpipe, STDIN_FILENO) == -1)
+			ft_fatal ();
+		if (close (*prevpipe) == -1)
+			ft_fatal ();
+		if (dup2 (pipefd[1], STDOUT_FILENO) == -1)
+			ft_fatal ();
+		if (close (pipefd[1]) == -1)
+			ft_fatal ();
 		cmd[len] = NULL;
 		if (execve (cmd[0], cmd, env) == -1)
 			ft_perror ("error: cannot execute ", cmd[0]);
 	}
 	else
 	{
-		close (pipefd[1]);
-		close (*prevpipe);
+		if (close (pipefd[1]) == -1)
+			ft_fatal ();
+		if (close (*prevpipe) == -1)
+			ft_fatal ();
 		*prevpipe = pipefd[0];
 	}
 }
@@ -89,19 +99,21 @@ int	ft_len(char **cmd)
 
 int	main(int ac, char **cmd, char **env)
 {
-	int	prevpipe;
 	int	len;
+	int	prevpipe;
 
 	(void)ac;
-	prevpipe = dup (STDIN_FILENO);
 	len = 0;
+	prevpipe = dup (0);
+	if (prevpipe == -1)
+		ft_fatal ();
 	while (cmd[len] && cmd[len + 1])
 	{
 		cmd += 1 + len;
 		len = ft_len (cmd);
 		if (*cmd[0] == ';')
 			continue ;
-		else if (!strcmp (cmd[0], "cd"))
+		if (!strcmp(cmd[0], "cd"))
 			ft_cd (cmd, len);
 		else if (cmd[len] && *cmd[len] == '|')
 			ft_pipe (cmd, len, env, &prevpipe);

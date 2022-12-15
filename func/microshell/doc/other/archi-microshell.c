@@ -1,91 +1,130 @@
-#include <unistd.h>
-#include <sys/wait.h>
-#include <string.h>
-
 #include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
 int	ft_strlen(char *str)
 {
-	int	i;
-
-	i = 0;
+	int i = 0;
 	while (str[i])
-		i ++;
+		i++;
 	return (i);
 }
 
-void	ft_putstr_fd(int fd, char *str)
+void	ft_fatal(void)
 {
-	write(fd, str, ft_strlen(str));
+	write (2, "error: fatal\n", 13);
+	exit (1);
 }
 
-void	ft_exec(char **av, int i, int fd, char **env)
+void	nop(void)
 {
-	av[i] = NULL;
-	dup2(fd, STDIN_FILENO);
-	close(fd);
-	if (execve(av[0], av, env) == -1)
+	dprintf (2, "nop\n");
+	exit (1);
+}
+void	error_printer(char *error, char *argument)
+{
+	write(2, error, ft_strlen(error));
+	if (argument)
 	{
-		ft_putstr_fd(2, "error: cannot execute ");
-		ft_putstr_fd(2, av[0]);
-		write(2, "\n", 1);
-		exit (EXIT_FAILURE);
+		write(2, " ", 1);
+		write(2, argument, ft_strlen(argument));
 	}
+	write(2, "\n", 1);
 }
 
-int	main(int ac, char **av, char **env)
+void	ft_cd(char **args)
 {
-	int	i;
+	if (!args[1] || args[2])
+		error_printer("error: cd: bad arguments", NULL);
+	else if (chdir(args[1]) == -1)
+		error_printer("error: cd: cannot change directory to", args[1]);
+}
+
+void	exec(char **argv, int is_piped, int old_stdin, char **env)
+{
+	int	fd[2];
 	int	pid;
-	int	fd_cpy;
-	int fd[2];
 
-	i = 0;
-	pid = 0;
-	fd_cpy = dup(STDIN_FILENO);
-	(void) ac;
-	while (av[i] && av[i + 1])
+	if (strcmp(argv[0], "cd") == 0)
 	{
-		av = &av[i + 1];
-		i = 0;
-		while (av[i] && strcmp(av[i], ";") && strcmp(av[i], "|"))
-			i ++;
-
-		if (i != 0 && (av[i] == NULL || !strcmp(av[i], ";")))
-		{
-			pid = fork();
-			if (pid == 0)
-				ft_exec(av, i, fd_cpy, env);
-			else
-			{
-				close(fd_cpy);
-				while (waitpid(0, 0, 0) != -1)
-					;
-				fd_cpy = dup(STDIN_FILENO);
-			}
-		}
-		else if (i != 0 && !strcmp(av[i], "|"))
-		{
-			pipe(fd);
-			pid = fork();
-			if (pid == 0)
-			{
-				dup2(fd[1], STDOUT_FILENO);
-				close(fd[0]);
-				close(fd[1]);
-				ft_exec(av, i, fd_cpy, env);
-			}
-			else
-			{
-				close(fd[1]);
-				close(fd_cpy);
-				fd_cpy = fd[0];
-			}
-		}
+		ft_cd(argv);
+		return ;
 	}
-	close(fd_cpy);
-	close(fd[0]);
-	close(fd[1]);
-	exit(EXIT_SUCCESS);
+	if (is_piped && pipe(fd) == -1)
+	{
+		error_printer("error: fatal", NULL);
+		if (close(old_stdin) == -1)
+			ft_fatal ();
+		exit(1);
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		error_printer("error: fatal", NULL);
+		if (close(old_stdin) == -1)
+			ft_fatal ();
+		exit(1);
+	}
+	if (pid == 0)
+	{
+		if (is_piped)
+		{
+			if (close(fd[0]) == -1)
+				ft_fatal ();
+			dup2(fd[1], 1);
+			if (close(fd[1]) == -1)
+				ft_fatal ();
+		}
+		execve(argv[0], argv, env);
+		error_printer("error: cannot execute", argv[0]);
+		if (close(old_stdin) == -1)
+			ft_fatal ();
+		exit(1);
+	}
+	else
+	{
+		if (is_piped)
+		{
+			if (close(fd[1]) == -1)
+				ft_fatal ();
+			dup2(fd[0], 0);
+			if (close (fd[0]) == -1)
+				ft_fatal ();
+		}
+		else
+			dup2(old_stdin, 0);
+		waitpid(pid, 0, 0);
+	}
+}
+
+int	main(int argc, char **argv, char **env)
+{
+	int	is_piped = 0;
+	int	old_stdin = dup(0);
+	int	i = 1;
+	int j = 1;
+
+	(void)argc;
+	while(argv[i])
+	{
+		if (strcmp(argv[i], "|") == 0 || strcmp(argv[i], ";") == 0)
+		{
+			if (strcmp(argv[i], "|") == 0)
+				is_piped = 1;
+			argv[i] = NULL;
+			if (argv[j])
+				exec(argv + j, is_piped, old_stdin, env);
+			is_piped = 0;
+			j = i + 1;
+		}
+		else if (argv[i + 1] == NULL)
+			exec(argv + j, is_piped, old_stdin, env);
+		i++;
+	}
+	if (close(old_stdin) == -1)
+		ft_fatal ();
+	return (0);
 }

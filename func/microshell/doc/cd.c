@@ -3,16 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 
-int	ft_cmdlen(char **cmd)
-{
-	int	len;
-
-	len = 0;
-	while (cmd[len] && *cmd[len] != '|' && *cmd[len] != ';')
-		len++;
-	return (len);
-}
-
 void	ft_pipe(char **cmd, int cmdlen, char **env, int *prevpipe)
 {
 	int		pipefd[2];
@@ -65,6 +55,24 @@ void	ft_program(char **cmd, int cmdlen, char **env, int prevpipe)
 	}
 }
 
+int	ft_cmdlen(char **cmd)
+{
+	int	len;
+
+	len = 0;
+	while (cmd[len] && *cmd[len] != '|' && *cmd[len] != ';')
+		len++;
+	return (len);
+}
+
+void	ft_cd(char **cmd, int cmdlen)
+{
+	if (cmdlen != 2)
+		dprintf (1, "error: cd: bad arguments\n");
+	else if (chdir (cmd[1]) == -1)
+		dprintf (1, "error: cd: cannot change directory to path_to_change\n");
+}
+
 int	main(int ac, char **av, char **env)
 {
 	int	cmdlen;
@@ -78,7 +86,10 @@ int	main(int ac, char **av, char **env)
 		av += cmdlen + 1;
 		cmdlen = ft_cmdlen (av);
 		if (!strcmp (av[0], "cd"))
+		{
 			dprintf (1, "ft_cd\n");
+			ft_cd (av, cmdlen);
+		}
 		else if (av[cmdlen] && *av[cmdlen] == '|')
 		{
 			dprintf (1, "ft_pipe\n");
@@ -92,3 +103,4 @@ int	main(int ac, char **av, char **env)
 	}
 	return (0);
 }
+

@@ -1,8 +1,18 @@
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <stdlib.h>
+
+/*
+ ** Tools:
+ **
+ ** #include <sys/stat.h>
+ ** struct stat information;
+ ** fstat (*prevpipe, &information);
+ **
+ ** valgrind -q --trace-children=yes --track-fds=yes
+ */
 
 void	ft_perror(char *s1, char *s2)
 {
@@ -13,7 +23,7 @@ void	ft_perror(char *s1, char *s2)
 	write (STDERR_FILENO, "\n", 1);
 }
 
-void	ft_fatal()
+void	ft_fatal(void)
 {
 	write (STDERR_FILENO, "error: fatal\n", 13);
 	exit (1);
@@ -25,7 +35,7 @@ void	ft_program(char **cmd, int len, char **env, int *prevpipe)
 
 	cpid = fork ();
 	if (cpid == -1)
-		ft_fatal();
+		ft_fatal ();
 	else if (cpid == 0)
 	{
 		dup2 (*prevpipe, STDIN_FILENO);
@@ -89,19 +99,19 @@ int	ft_len(char **cmd)
 
 int	main(int ac, char **cmd, char **env)
 {
-	int	prevpipe;
 	int	len;
+	int	prevpipe;
 
 	(void)ac;
-	prevpipe = dup (STDIN_FILENO);
 	len = 0;
+	prevpipe = dup (STDIN_FILENO);
 	while (cmd[len] && cmd[len + 1])
 	{
 		cmd += 1 + len;
 		len = ft_len (cmd);
 		if (*cmd[0] == ';')
 			continue ;
-		else if (!strcmp (cmd[0], "cd"))
+		else if (!strcmp(cmd[0], "cd"))
 			ft_cd (cmd, len);
 		else if (cmd[len] && *cmd[len] == '|')
 			ft_pipe (cmd, len, env, &prevpipe);
