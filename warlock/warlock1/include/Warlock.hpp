@@ -10,8 +10,7 @@
 
 class Warlock {
  public:
-  Warlock( std::string const& name = "default_name",
-           std::string const& title = "default_title" );
+  Warlock( std::string const& name, std::string const& title );
   virtual ~Warlock( void );
 
   void introduce( void ) const;
