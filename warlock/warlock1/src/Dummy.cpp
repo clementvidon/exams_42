@@ -1,6 +1,21 @@
-// @author    Clément Vidon
-// @created   230420 10:10:32  by  clem@spectre
-// @modified  230420 10:10:32  by  clem@spectre
-// @filename  Dummy.cpp
+#include <iostream>
+#include <string>
 
+#include "Dummy.hpp"
 
+/*  CANON
+------------------------------------------------- */
+
+Dummy::Dummy( void ) : ATarget( "Target Practice Dummy" ) {
+  return;
+}
+
+Dummy::~Dummy( void ) {
+  return;
+}
+
+/* ---------------------------------------------- */
+
+Dummy* Dummy::clone( void ) const {
+  return new Dummy();
+}
