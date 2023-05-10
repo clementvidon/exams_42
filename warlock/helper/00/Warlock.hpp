@@ -9,7 +9,7 @@ class Warlock
 	private:
 		string	name;
 		string	title;
-	
+
 	public:
 		Warlock(void);
 		virtual ~Warlock(void);

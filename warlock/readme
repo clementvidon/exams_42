@@ -1,0 +1,6 @@
+01
+- XXX class Fwoosh: public Fwoosh {
+- XXX Fwoosh and Dummy are NOT CANON
+- XXX Fwoosh and Dummy should call their superclass constructor at construction + pass params' value
+- XXX ASpell ATarget need a default constructor to be canon even if non implemented
+- XXX ASpell ATarget destructor need to be virtual
