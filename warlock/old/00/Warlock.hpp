@@ -5,10 +5,10 @@
 class Warlock {
   public:
     Warlock( void );
-    Warlock( std::string name, std::string title );
+    Warlock( std::string const& name, std::string const& title );
     Warlock( Warlock const& src );
     ~Warlock( void );
-    Warlock& operator=( Warlock const& src);
+    Warlock& operator=( Warlock const& rhs );
 
     std::string const& getName( void ) const;
     std::string const& getTitle( void ) const;

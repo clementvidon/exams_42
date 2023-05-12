@@ -1,16 +1,10 @@
-#include <string>
 #include <iostream>
 
+#include "ATarget.hpp"
 #include "ASpell.hpp"
 
-#include "ATarget.hpp"
-
-ATarget::ATarget( void ) {
-  return;
-}
-
 ATarget::ATarget( std::string type ) :
-  _type( type ) {
+ _type( type ) {
   return;
 }
 
@@ -25,12 +19,11 @@ ATarget::~ATarget( void ) {
 
 ATarget& ATarget::operator=( ATarget const& rhs ) {
   if ( this == &rhs ) {
-    return *this;
+    return ( *this );
   }
   _type = rhs._type;
-  return *this;
+  return ( *this );
 }
-
 
 std::string const& ATarget::getType( void ) const {
   return _type;

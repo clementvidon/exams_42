@@ -2,7 +2,8 @@
 
 #include <string>
 
-class ATarget;
+/* #include "ATarget.hpp" */
+class ATarget; // TODO why?
 
 class ASpell {
   public:
@@ -16,7 +17,6 @@ class ASpell {
     std::string getEffects( void ) const;
 
     virtual ASpell* clone( void ) const = 0;
-
     void launch( ATarget const& target ) const;
 
   protected:

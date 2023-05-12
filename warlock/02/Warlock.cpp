@@ -1,6 +1,10 @@
 #include <string>
 #include <iostream>
 
+#include "ASpell.hpp"
+#include "ATarget.hpp"
+#include "SpellBook.hpp"
+
 #include "Warlock.hpp"
 
 /* Warlock( void ) { */
@@ -44,5 +48,26 @@ void Warlock::setTitle( std::string const& title ) {
 
 void Warlock::introduce( void ) const {
   std::cout << _name << ": I am " << _name << ", " << _title << "!\n";
+  return;
+}
+
+
+void Warlock::learnSpell( ASpell* spell ) {
+  _spellBook.learnSpell( spell );
+  return;
+}
+
+void Warlock::forgetSpell( std::string spellName ) {
+  _spellBook.forgetSpell( spellName );
+}
+
+void Warlock::launchSpell( std::string spellName, ATarget &target ) {
+  ASpell *spell = _spellBook.createSpell( spellName );
+
+  if ( !spell ) {
+    return;
+  }
+  spell->launch( target );
+  delete spell;
   return;
 }

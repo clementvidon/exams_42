@@ -20,6 +20,6 @@ class TargetGenerator
 
 		void	learnTargetType(ATarget* target);
 		void	forgetTargetType(const string& type);
-		
+
 		ATarget*	createTarget(const string& type);
 };

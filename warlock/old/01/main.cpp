@@ -1,10 +1,16 @@
-#include <iostream>
-
 #include "Warlock.hpp"
-#include "Fwoosh.hpp"
 #include "Dummy.hpp"
+#include "Fwoosh.hpp"
 
-int main( void ) {
+
+/* ~$ ./a.out | cat -e */
+/* Richard: This looks like another boring day.$ */
+/* Richard: I am Richard, the Titled!$ */
+/* Target Practice Dummy has been fwooshed!$ */
+/* Richard: My job here is done!$ */
+
+int main()
+{
   Warlock richard("Richard", "the Titled");
 
   Dummy bob;
@@ -17,6 +23,4 @@ int main( void ) {
 
   richard.forgetSpell("Fwoosh");
   richard.launchSpell("Fwoosh", bob);
-
-  delete fwoosh;
 }

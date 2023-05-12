@@ -2,6 +2,11 @@
 
 #include <string>
 
+#include "ATarget.hpp"
+#include "SpellBook.hpp"
+
+class ASpell;
+
 class Warlock {
   public:
     Warlock( void );
@@ -16,7 +21,12 @@ class Warlock {
 
     void introduce( void ) const;
 
+    void learnSpell( ASpell* spell );
+    void forgetSpell( std::string spellName );
+    void launchSpell( std::string spellName, ATarget &target );
+
   private:
     std::string _name;
     std::string _title;
+    SpellBook _spellBook;
 };

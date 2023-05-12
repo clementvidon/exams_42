@@ -1,24 +1,19 @@
-#include <string>
 #include <iostream>
 
 #include "ATarget.hpp"
 #include "ASpell.hpp"
 
-ASpell::ASpell( void ) {
-  return;
-}
-
 ASpell::ASpell( std::string name, std::string effects ) :
   _name( name ),
   _effects( effects ) {
-    return;
-  }
+  return;
+}
 
 ASpell::ASpell( ASpell const& src ) :
-  _name( src._name ),
-  _effects( src._effects ) {
-    return;
-  }
+ _name( src._name ),
+ _effects( src._effects ) {
+  return;
+}
 
 ASpell::~ASpell( void ) {
   return;
@@ -26,13 +21,12 @@ ASpell::~ASpell( void ) {
 
 ASpell& ASpell::operator=( ASpell const& rhs ) {
   if ( this == &rhs ) {
-    return *this;
+    return ( *this );
   }
   _name = rhs._name;
   _effects = rhs._effects;
-  return *this;
+  return ( *this );
 }
-
 
 std::string ASpell::getName( void ) const {
   return _name;

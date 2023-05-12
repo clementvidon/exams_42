@@ -1,12 +1,11 @@
-#include <string>
 #include <iostream>
+#include <string>
 
 #include "ASpell.hpp"
-
 #include "Fwoosh.hpp"
 
 Fwoosh::Fwoosh( void ) :
-  ASpell( "Fwoosh", "fwooshed" ) {
+  ASpell ( "Fwoosh", "fwosshed" ) {
   return;
 }
 
@@ -17,3 +16,4 @@ Fwoosh::~Fwoosh( void ) {
 Fwoosh* Fwoosh::clone( void ) const {
   return new Fwoosh();
 }
+
