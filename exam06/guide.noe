@@ -1,0 +1,86 @@
+bash -c "$(curl https://grademe.fr)"
+gcc -Wall -Werror -Wextra mini_serv.c && ./a.out 6667
+nc localhost 6667
+
+all without guide: 25min + error confusion between 'w' and 'r'
+
+#/////////////////////////////////////// Part 1
+
+Variables
+1.  A client struct
+2.  An array of client
+3.  A counter for the next client id
+4.  A buffer to read
+5.  A buffer to write
+6.  A to watch fd set
+7.  A ready for reading fd set
+8.  A ready for writing fd set
+9.  A tracker for the highest-numbered fd
+
+Broadcast function
+1. Function which send a message to everyone.
+    - message is sent to everyone except its sender
+    - message come from the buffer to write
+
+Mistakes->>>
+    - don't confuse **wfds** (ready to be written) with **rfds** (ready to be read)
+<<<-
+
+2. Main/Init
+    - Handle "Wrong number of arguments\n" error
+    - Setup the Server Socket (based on provided main.c)
+    - Any error should StdErr "Fatal error\n"; exit(1);
+    - Initialize the fds watchlist and highest-numbered fd with the Server Socket
+
+Mistakes->>>
+    - atoi(argv**[1]**) not [2]
+<<<-
+
+#/////////////////////////////////////// Part 2
+
+3. Main/Loop
+    - Initialize Select Events Sets
+    - Call Select with gentle error handling (the 1st/2)
+
+4. Main/Loop/Server
+    - Loop over all fds
+    - Accept incoming client connection with gentle error handling (the 2nd/2)
+    - Update the highest-numbered fd
+    - Add new client fd to watchlist
+    - Set new client id
+    - Broadcast "server: client %d just arrived\n
+    - Pass to the next fd
+
+Mistakes->>>
+    - don't forget '+ 1' in 'select(**nfds + 1**' X X
+    - 'fd **<=** nfds' not 'fd < nfds' in the for
+    - don't forget 'if(**connfd > nfds**){' before 'nfds = connfd'
+    - sprintf 'clients[**connfd**].id' not 'clients[fd].id' (cause, is sockfd)
+    - dont forget 'broadcast(connfd);' X
+    - dont forget 'if (FD_ISSET...' line X
+    - **while(1)** not while(0)
+    - dont forget 'break' *the code has 2 continues and 3 breaks*
+
+<<<-
+
+5. Main/Loop/Client
+    - Receive incoming message
+
+6. Main/Loop/Client/Disconnect
+    - Broadcast "server: client %d just left\n"
+    - Remove fd from watchlist Close fd
+    - Pass to the next fd
+
+7. Main/Loop/Client/Message
+    - Iterates through the incoming data char by char
+    - Append each char from incoming data to existing message
+    - Terminate the string if a newline is found
+        - Broadcast "client %d: %s\n"
+        - Clear existing message buffer
+        - Reset message iterator
+    - Pass to the next fd
+
+Mistakes->>>
+  - 'for **(int i = 0, j**' not 'for (int i, j'
+  - **bzero(clients[fd].msg** not buf_r X X
+<<<-
